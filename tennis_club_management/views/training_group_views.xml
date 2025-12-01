@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Группы - список -->
+    <record id="training_group_view_tree" model="ir.ui.view">
+        <field name="name">training.group.tree</field>
+        <field name="model">training.group</field>
+        <field name="arch" type="xml">
+            <list string="Группы" decoration-muted="not active">
+                <field name="name"/>
+                <field name="training_type_id"/>
+                <field name="min_participants"/>
+                <field name="max_participants"/>
+                <field name="participant_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Группы - форма -->
+    <record id="training_group_view_form" model="ir.ui.view">
+        <field name="name">training.group.form</field>
+        <field name="model">training.group</field>
+        <field name="arch" type="xml">
+            <form string="Группа">
+                <header>
+                    <button name="action_delete" string="Удалить" type="object" class="btn-danger" 
+                            confirm="Вы уверены, что хотите удалить эту группу?"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Название группы"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="training_type_id" 
+                                   options="{'no_create': True, 'no_create_edit': True}"
+                                   required="1"/>
+                            <field name="min_participants" readonly="1"/>
+                            <field name="max_participants" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="participant_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Участники" name="participants">
+                            <field name="participant_ids" 
+                                   widget="many2many_tags"
+                                   domain="[('is_company', '=', False), ('is_employee', '=', False), ('telegram_chat_id', '!=', False)]"
+                                   options="{'no_create': True}">
+                                <list string="Участники">
+                                    <field name="name"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Группы - поиск -->
+    <record id="training_group_view_search" model="ir.ui.view">
+        <field name="name">training.group.search</field>
+        <field name="model">training.group</field>
+        <field name="arch" type="xml">
+            <search string="Группы">
+                <field name="name"/>
+                <field name="training_type_id"/>
+                <separator/>
+                <filter string="Активные" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Неактивные" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group string="Группировка">
+                    <filter string="По типу тренировки" name="group_training_type" context="{'group_by': 'training_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Действие для групп -->
+    <record id="action_training_group" model="ir.actions.act_window">
+        <field name="name">Группы</field>
+        <field name="res_model">training.group</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="training_group_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте первую группу
+            </p>
+            <p>
+                Группы позволяют объединять клиентов для групповых тренировок. При добавлении участника в группу ему автоматически отправляется уведомление в Telegram.
+            </p>
+        </field>
+    </record>
+
+</odoo>
+

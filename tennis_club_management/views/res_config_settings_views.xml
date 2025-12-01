@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_tennis_club" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.tennis.club</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <div class="app_settings_block" data-string="Telegram" data-key="tennis_club_telegram">
+                    <h2>Интеграция с Telegram</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="telegram_bot_token"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="telegram_bot_token"/>
+                                <div class="text-muted">
+                                    Токен Telegram бота, используемого для отправки уведомлений клиентам.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="telegram_api_base_url"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="telegram_api_base_url"/>
+                                <div class="text-muted">
+                                    Базовый URL API Telegram. По умолчанию https://api.telegram.org.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

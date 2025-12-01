@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Типы тренировок - список -->
+    <record id="training_type_view_tree" model="ir.ui.view">
+        <field name="name">training.type.tree</field>
+        <field name="model">training.type</field>
+        <field name="arch" type="xml">
+            <list string="Типы тренировок">
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <field name="min_participants"/>
+                <field name="max_participants"/>
+                <field name="duration_hours"/>
+                <field name="total_bookings"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Типы тренировок - форма -->
+    <record id="training_type_view_form" model="ir.ui.view">
+        <field name="name">training.type.form</field>
+        <field name="model">training.type</field>
+        <field name="arch" type="xml">
+            <form string="Тип тренировки">
+                <header>
+                    <button name="action_duplicate" string="Дублировать" type="object" class="btn-secondary"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_training_prices" icon="fa-rub" groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager">
+                            <field name="total_prices" string="Цены"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_bookings" icon="fa-calendar">
+                            <field name="total_bookings" string="Записи"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Название типа тренировки"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="category"/>
+                            <field name="duration_hours"/>
+                        </group>
+                        <group>
+                            <field name="min_participants"/>
+                            <field name="max_participants"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Описание типа тренировки"/>
+                    </group>
+                    <notebook>
+                        <page string="Цены в спортивных центрах" name="training_prices" groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager">
+                            <field name="training_price_ids" readonly="0" nolabel="1">
+                                <list string="Цены в спортивных центрах" editable="bottom">
+                                    <field name="sports_center_id" required="1"/>
+                                    <field name="price_per_hour" required="1"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                            <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+                                <p><strong>Примечание:</strong> Здесь вы можете настроить стоимость данного типа тренировки для различных спортивных центров.</p>
+                                <p>Для каждого спортивного центра можно задать свою цену за час.</p>
+                            </div>
+                        </page>
+                        <page string="Записи на тренировки" name="bookings">
+                            <field name="booking_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="customer_id"/>
+                                    <field name="trainer_id"/>
+                                    <field name="court_id"/>
+                                    <field name="booking_date"/>
+                                    <field name="start_time_display"/>
+                                    <field name="end_time_display"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Типы тренировок - поиск -->
+    <record id="training_type_view_search" model="ir.ui.view">
+        <field name="name">training.type.search</field>
+        <field name="model">training.type</field>
+        <field name="arch" type="xml">
+            <search string="Типы тренировок">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <separator/>
+                <filter string="Активные" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Архивные" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group string="Группировка">
+                    <filter string="По категории" name="group_category" context="{'group_by': 'category'}"/>
+                    <filter string="По участникам" name="group_participants" context="{'group_by': 'max_participants'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Действие для типов тренировок -->
+    <record id="action_training_type" model="ir.actions.act_window">
+        <field name="name">Типы тренировок</field>
+        <field name="res_model">training.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="training_type_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте первый тип тренировки
+            </p>
+            <p>
+                Типы тренировок определяют стоимость, продолжительность и количество участников.
+            </p>
+        </field>
+    </record>
+
+
+</odoo>
