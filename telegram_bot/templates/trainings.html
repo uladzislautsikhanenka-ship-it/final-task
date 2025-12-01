@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои тренировки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7c4dff;
+            --primary-light: #9c75ff;
+            --primary-dark: #5e35b1;
+            --secondary: #00e5ff;
+            --accent: #ff4081;
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --bg-surface: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #757575;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+            --border-radius: 20px;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 16px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 32px 20px 28px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            padding: 24px 20px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-balance {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 6px 15px rgba(124, 77, 255, 0.4);
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--bg-surface);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0 8px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 18px 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+
+        .tab-button i {
+            font-size: 20px;
+            transition: var(--transition);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+        }
+
+        .tab-button.active i {
+            color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            width: 60%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .tab-button:hover::before {
+            opacity: 0.05;
+        }
+
+        .tab-content {
+            padding: 24px 20px;
+            min-height: 400px;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 3px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .training-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .training-card {
+            background: var(--bg-surface);
+            border-radius: 18px;
+            padding: 20px;
+            transition: var(--transition);
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .training-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            z-index: 1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .training-card:hover::before {
+            opacity: 0.03;
+        }
+
+        .training-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .training-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .training-name {
+            font-weight: 600;
+            font-size: 17px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .training-name i {
+            color: var(--primary-light);
+        }
+
+        .training-status {
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .status-upcoming {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(33, 150, 243, 0.15);
+            color: #2196f3;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .status-confirmed {
+            background: rgba(156, 39, 176, 0.15);
+            color: #9c27b0;
+            border: 1px solid rgba(156, 39, 176, 0.3);
+        }
+
+        .training-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .training-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .training-detail i {
+            width: 18px;
+            text-align: center;
+            color: var(--primary-light);
+        }
+
+        .training-detail strong {
+            color: var(--text-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: var(--primary-light);
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        .stats-container {
+            background: var(--bg-surface);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .stat-item:hover::before {
+            opacity: 0.05;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            border-color: rgba(124, 77, 255, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: var(--primary-light);
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rules-container {
+            background: var(--bg-surface);
+            border-radius: 18px;
+            padding: 28px 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rules-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .rules-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .rules-title i {
+            color: var(--primary);
+        }
+
+        .rules-list {
+            list-style-type: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .rule-item {
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: var(--transition);
+        }
+
+        .rule-item:hover {
+            transform: translateX(5px);
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+
+        .rule-number {
+            background: var(--gradient-primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 6px 12px rgba(124, 77, 255, 0.4);
+        }
+
+        .rule-text {
+            color: var(--text-primary);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading i {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .error {
+            text-align: center;
+            padding: 28px;
+            color: var(--error);
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 16px;
+            margin: 20px 0;
+            border: 1px solid rgba(244, 67, 54, 0.2);
+        }
+
+        .error i {
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+
+        /* Анимация появления элементов */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .training-card, .stat-item, .rule-item {
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .training-details {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .tab-button {
+                padding: 16px 10px;
+                font-size: 13px;
+            }
+
+            .tab-button i {
+                font-size: 18px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .user-info {
+                padding: 20px;
+            }
+
+            .user-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .training-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .training-status {
+                align-self: flex-start;
+                margin-left: 0;
+            }
+
+            .tab-buttons {
+                padding: 0 4px;
+            }
+
+            .tab-button {
+                padding: 14px 8px;
+                font-size: 12px;
+            }
+
+            .tab-button i {
+                font-size: 16px;
+            }
+
+            .header {
+                padding: 28px 16px 24px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .tab-content {
+                padding: 20px 16px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .user-icon {
+                align-self: flex-end;
+                margin-top: -60px;
+                margin-left: 0;
+            }
+
+            .rules-container {
+                padding: 24px 20px;
+            }
+
+            .rule-item {
+                padding: 16px 0;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .tab-button span {
+                display: none;
+            }
+
+            .tab-button i {
+                font-size: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .user-name, .user-balance {
+                font-size: 16px;
+            }
+
+            .training-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-dumbbell"></i> Мои тренировки</h1>
+                <p>Управляйте вашими занятиями</p>
+            </div>
+        </div>
+
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">-</span>
+                </div>
+                <div class="user-balance">
+                    <i class="fas fa-wallet"></i>
+                    <span id="userBalance">0.00 руб.</span>
+                </div>
+            </div>
+            <div class="user-icon">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-button active" data-tab="trainings">
+                <i class="fas fa-running"></i>
+                <span>Тренировки</span>
+            </button>
+            <button class="tab-button" data-tab="completed">
+                <i class="fas fa-check-circle"></i>
+                <span>Завершенные</span>
+            </button>
+            <button class="tab-button" data-tab="stats">
+                <i class="fas fa-chart-line"></i>
+                <span>Статистика</span>
+            </button>
+        </div>
+
+        <div class="tab-content">
+            <div id="trainings-tab" class="tab-panel active">
+                <div class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Предстоящие тренировки</span>
+                </div>
+                <div id="upcomingTrainings" class="training-list"></div>
+            </div>
+
+            <div id="completed-tab" class="tab-panel">
+                <div class="section-title">
+                    <i class="fas fa-check-double"></i>
+                    <span>Завершенные тренировки</span>
+                </div>
+                <div id="completedTrainings" class="training-list"></div>
+            </div>
+
+            <div id="stats-tab" class="tab-panel">
+                <div class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Моя статистика</span>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <div class="stat-value" id="totalTrainings">0</div>
+                            <div class="stat-label">Всего тренировок</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-value" id="completedCount">0</div>
+                            <div class="stat-label">Завершено</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-value" id="upcomingCount">0</div>
+                            <div class="stat-label">Предстоит</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rules-container">
+                    <div class="rules-title">
+                        <i class="fas fa-list-ol"></i>
+                        <span>Команды в боте</span>
+                    </div>
+                    <ul class="rules-list">
+                        <li class="rule-item">
+                            <div class="rule-number">1</div>
+                            <div class="rule-text">Открыть приложение - /info</div>
+                        </li>
+                        <li class="rule-item">
+                            <div class="rule-number">2</div>
+                            <div class="rule-text">Перезагрузить бота - /start</div>
+                        </li>
+                        <li class="rule-item">
+                            <div class="rule-number">3</div>
+                            <div class="rule-text">Пополнить баланс - /my_balance</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <div>Загрузка данных...</div>
+        </div>
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // Функция для получения параметров из URL
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Функция для декодирования base64
+        function decodeBase64(str) {
+            if (!str) {
+                return null;
+            }
+            try {
+                const normalized = str.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+                const decoded = atob(padded);
+                try {
+                    return decodeURIComponent(escape(decoded));
+                } catch (e) {
+                    return decoded;
+                }
+            } catch (error) {
+                console.error('decodeBase64 error', error);
+                return null;
+            }
+        }
+
+        // Функция для форматирования статуса
+        function formatStatus(state) {
+            const statusMap = {
+                'completed': { text: 'Завершена', class: 'status-completed' },
+                'confirmed': { text: 'Подтверждена', class: 'status-confirmed' },
+                'draft': { text: 'Запланирована', class: 'status-upcoming' },
+                'in_progress': { text: 'В процессе', class: 'status-confirmed' },
+                'cancelled': { text: 'Отменена', class: 'status-upcoming' }
+            };
+            return statusMap[state] || { text: state, class: 'status-upcoming' };
+        }
+
+        // Функция для форматирования даты
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        // Функция для создания карточки тренировки
+        function createTrainingCard(training, index) {
+            const status = formatStatus(training.state);
+            return `
+                <div class="training-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="training-header">
+                        <span class="training-name">
+                            <i class="fas fa-dumbbell"></i>
+                            ${training.name}
+                        </span>
+                        <span class="training-status ${status.class}">${status.text}</span>
+                    </div>
+                    <div class="training-details">
+                        <div class="training-detail">
+                            <i class="far fa-calendar"></i>
+                            <strong>Дата:</strong> ${formatDate(training.date)}
+                        </div>
+                        <div class="training-detail">
+                            <i class="far fa-clock"></i>
+                            <strong>Время:</strong> ${training.start_time} - ${training.end_time}
+                        </div>
+                        <div class="training-detail">
+                            <i class="fas fa-tag"></i>
+                            <strong>Тип:</strong> ${training.training_type || 'Индивидуальная'}
+                        </div>
+                        <div class="training-detail">
+                            <i class="fas fa-user-tie"></i>
+                            <strong>Тренер:</strong> ${training.trainer || 'Не назначен'}
+                        </div>
+                        <div class="training-detail" style="grid-column: 1 / -1;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>Корт:</strong> ${training.court || 'Не указан'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Функция для отображения пустого состояния
+        function showEmptyState(containerId, message, icon = 'fas fa-inbox') {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Функция для переключения вкладок
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Убираем активный класс у всех кнопок и панелей
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanels.forEach(panel => panel.classList.remove('active'));
+
+                    // Добавляем активный класс к выбранной кнопке и панели
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Основная функция загрузки данных
+        function loadData() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const errorMessageEl = document.getElementById('errorMessage');
+
+            try {
+                // Получаем данные из URL
+                const encodedData = getUrlParameter('data');
+
+                if (!encodedData) {
+                    throw new Error('Данные не найдены в URL. Пожалуйста, используйте команду /info в боте.');
+                }
+
+                // Декодируем данные
+                const decodedData = decodeBase64(encodedData);
+                if (!decodedData) {
+                    throw new Error('Не удалось декодировать данные');
+                }
+
+                // Парсим JSON
+                const userData = JSON.parse(decodedData);
+
+                // Проверяем структуру данных
+                if (!userData || typeof userData !== 'object') {
+                    throw new Error('Некорректный формат данных');
+                }
+
+                // Скрываем загрузку
+                loadingEl.style.display = 'none';
+
+                // Отображаем информацию о пользователе
+                document.getElementById('userName').textContent = userData.name || 'Не указано';
+                document.getElementById('userBalance').textContent = `${parseFloat(userData.balance || 0).toFixed(2)} руб.`;
+
+                // Убеждаемся, что trainings - это массив
+                const trainings = Array.isArray(userData.trainings) ? userData.trainings : [];
+
+                // Разделяем тренировки на завершенные и предстоящие
+                const completedTrainings = trainings.filter(t => t.state === 'completed');
+                const upcomingTrainings = trainings.filter(t => t.state !== 'completed');
+
+                // Отображаем предстоящие тренировки
+                const upcomingContainer = document.getElementById('upcomingTrainings');
+                if (upcomingTrainings.length === 0) {
+                    showEmptyState('upcomingTrainings', 'Нет предстоящих тренировок', 'fas fa-calendar-plus');
+                } else {
+                    upcomingContainer.innerHTML = upcomingTrainings.map((training, index) => createTrainingCard(training, index)).join('');
+                }
+
+                // Отображаем завершенные тренировки
+                const completedContainer = document.getElementById('completedTrainings');
+                if (completedTrainings.length === 0) {
+                    showEmptyState('completedTrainings', 'Нет завершенных тренировок', 'fas fa-check-circle');
+                } else {
+                    completedContainer.innerHTML = completedTrainings.map((training, index) => createTrainingCard(training, index)).join('');
+                }
+
+                // Обновляем статистику
+                document.getElementById('totalTrainings').textContent = trainings.length;
+                document.getElementById('completedCount').textContent = completedTrainings.length;
+                document.getElementById('upcomingCount').textContent = upcomingTrainings.length;
+
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'block';
+                errorMessageEl.textContent = `Ошибка: ${error.message}`;
+            }
+        }
+
+        // Загружаем данные при загрузке страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            setupTabs();
+            loadData();
+        });
+    </script>
+</body>
+</html>
