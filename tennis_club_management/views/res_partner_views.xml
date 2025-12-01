@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_partner_form_simple" model="ir.ui.view">
+        <field name="name">res.partner.form.simple</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <form position="replace">
+                <form string="Клиент">
+                    <header>
+                        <field name="active" widget="boolean_toggle"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_res_partner_categories" type="action" class="oe_stat_button" icon="fa-tags">
+                                <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            </button>
+                            <button name="action_view_bookings" type="object" class="oe_stat_button" icon="fa-calendar-check-o">
+                                <field name="booking_count" widget="statinfo" string="Заказы"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="ФИО клиента"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="id" readonly="1"/>
+                                <field name="balance"/>
+                                <field name="telegram_chat_id"/>
+                            </group>
+                            <group>
+                                <field name="phone"/>
+                                <field name="mobile"/>
+                                <field name="email"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="История заказов" name="bookings">
+                                <field name="training_booking_ids" readonly="1">
+                                    <list string="История заказов" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'" decoration-info="state in ['draft','confirmed','in_progress']">
+                                        <field name="name"/>
+                                        <field name="booking_date"/>
+                                        <field name="start_time_display"/>
+                                        <field name="end_time_display"/>
+                                        <field name="trainer_id"/>
+                                        <field name="court_id"/>
+                                        <field name="training_type_id"/>
+                                        <field name="total_price"/>
+                                        <field name="state"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_res_partner_tree_simple" model="ir.ui.view">
+        <field name="name">res.partner.tree.simple</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <list position="replace">
+                <list string="Клиенты" create="true" edit="true">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="balance"/>
+                    <field name="telegram_chat_id"/>
+                    <field name="phone"/>
+                    <field name="mobile"/>
+                    <field name="email"/>
+                    <field name="active"/>
+                </list>
+            </list>
+        </field>
+    </record>
+
+    <!-- Действие для категорий партнеров -->
+    <record id="action_res_partner_categories" model="ir.actions.act_window">
+        <field name="name">Категории партнеров</field>
+        <field name="res_model">res.partner.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="base.view_partner_category_list"/>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- Действие для открытия списка клиентов -->
+    <record id="action_res_partner_simple" model="ir.actions.act_window">
+        <field name="name">Клиенты</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_res_partner_tree_simple"/>
+        <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        <field name="domain">[('telegram_chat_id', '!=', False), ('is_employee', '=', False)]</field>
+        <field name="context">{'search_default_customer': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте своего первого клиента!
+            </p>
+            <p>
+                Клиенты - это основные контакты вашего теннисного клуба.
+                Здесь хранится информация о ФИО, балансе, телефоне и email.
+            </p>
+        </field>
+    </record>
+
+</odoo>

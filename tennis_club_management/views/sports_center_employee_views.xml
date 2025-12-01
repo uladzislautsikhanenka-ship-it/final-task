@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Представление списка сотрудников спортивного центра -->
+    <record id="view_hr_employee_sports_center_tree" model="ir.ui.view">
+        <field name="name">hr.employee.sports.center.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <list string="Сотрудники спортивного центра" decoration-success="is_manager" decoration-muted="not active">
+                <field name="name"/>
+                <field name="position"/>
+                <field name="work_hours_per_month"/>
+                <field name="hourly_rate"/>
+                <field name="monthly_salary"/>
+                <field name="mobile_phone"/>
+                <field name="work_email"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_employee_sports_center_form" model="ir.ui.view">
+        <field name="name">hr.employee.sports.center.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Скрываем стандартные поля job_id, department_id, parent_id, coach_id -->
+            <xpath expr="//field[@name='job_id']" position="replace"/>
+            <xpath expr="//field[@name='department_id']" position="replace"/>
+            <xpath expr="//field[@name='parent_id']" position="replace"/>
+            <xpath expr="//field[@name='coach_id']" position="replace"/>
+            
+            <!-- Добавляем кастомное поле должности -->
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="position"/>
+            </xpath>
+            
+            <!-- Добавляем поля спортивного центра -->
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="sports_center_id" options="{'no_create': True}"/>
+            </xpath>
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="work_hours_per_month" readonly="1"/>
+                <field name="hourly_rate" readonly="1"/>
+                <field name="monthly_salary" readonly="1"/>
+            </xpath>
+
+            <!-- Блок надбавок тренера по видам тренировок - показываем только для тренеров -->
+            <xpath expr="//sheet/group" position="inside">
+                <group string="Надбавки тренера (руб/час)" invisible="position != 'trainer'">
+                    <field name="price_extra_individual"/>
+                    <field name="price_extra_split"/>
+                    <field name="price_extra_group"/>
+                </group>
+            </xpath>
+
+            <!-- Вкладка с календарём доступности тренера - показываем только для тренеров -->
+            <xpath expr="//sheet/notebook/page[1]" position="before">
+                <page string="работа" invisible="position != 'trainer'">
+                    <group>
+                        <div class="o_row" style="margin-bottom: 8px;">
+                            <button name="%(tennis_club_management.action_trainer_availability_calendar)d"
+                                    type="action" class="btn btn-primary"
+                                    style="width: 220px; height: 45px; margin-right: 8px;"
+                                    string="Открыть календарь"
+                                    context="{'default_employee_id': id}"/>
+
+                            <button name="action_recompute_hours"
+                                    type="object" class="btn btn-secondary"
+                                    style="width: 220px; height: 45px; margin-right: 8px;"
+                                    string="Пересчитать часы (месяц)"/>
+
+                            <button name="%(tennis_club_management.action_trainer_availability_wizard)d"
+                                    type="action" class="btn btn-secondary"
+                                    style="width: 220px; height: 45px; margin-right: 8px;"
+                                    string="Массово добавить доступность"
+                                    context="{'default_employee_id': id, 'default_sports_center_id': sports_center_id}"/>
+
+                            <button name="%(tennis_club_management.action_trainer_future_bookings)d"
+                                    type="action" class="btn btn-secondary"
+                                    style="width: 220px; height: 45px; margin-right: 8px;"
+                                    string="Будущие тренировки"
+                                    context="{'search_default_trainer_id': id}"/>
+
+                            <button name="%(tennis_club_management.action_trainer_past_bookings)d"
+                                    type="action" class="btn btn-secondary"
+                                    style="width: 220px; height: 45px; margin-right: 8px;"
+                                    string="Прошедшие тренировки"
+                                    context="{'search_default_trainer_id': id}"/>
+
+                            <button name="%(tennis_club_management.action_training_booking_quick_create)d"
+                                    type="action" class="btn btn-success"
+                                    style="width: 220px; height: 45px;"
+                                    string="Записать к себе"
+                                    context="{'default_trainer_id': id, 'default_sports_center_id': sports_center_id}"/>
+
+                            <button name="%(tennis_club_management.action_trainer_revenue_report_wizard)d"
+                                    type="action" class="btn btn-secondary"
+                                    style="width: 220px; height: 45px; margin-left: 8px;"
+                                    string="Доход (месяц)"
+                                    context="{'default_employee_id': id}"/>
+                        </div>
+                        <field name="availability_ids" context="{'default_employee_id': id}" options="{'no_create_edit': False}" views="calendar,list,form"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Представление списка сотрудников для спортивного центра с кнопкой "Доход" -->
+    <record id="view_hr_employee_sports_center_modal_tree" model="ir.ui.view">
+        <field name="name">hr.employee.sports.center.modal.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <list string="Сотрудники спортивного центра" decoration-success="is_manager" decoration-muted="not active" create="false" edit="false" delete="false">
+                <field name="name"/>
+                <field name="position"/>
+                <field name="work_hours_per_month"/>
+                <field name="hourly_rate"/>
+                <field name="monthly_salary"/>
+                <field name="mobile_phone"/>
+                <field name="work_email"/>
+                <field name="active"/>
+                <button name="%(tennis_club_management.action_trainer_revenue_report_wizard)d"
+                        type="action"
+                        string="Доход"
+                        icon="fa-dollar"
+                        invisible="position != 'trainer'"
+                        groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"
+                        context="{'default_employee_id': id, 'simple_view': True}"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_sports_center_employee_modal" model="ir.actions.act_window">
+        <field name="name">Сотрудники</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_hr_employee_sports_center_modal_tree"/>
+        <field name="domain">[('sports_center_id', '=', active_id)]</field>
+        <field name="context">{'default_sports_center_id': active_id}</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_trainer_self_profile" model="ir.actions.act_window">
+        <field name="name">Мой профиль</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="hr.view_employee_form"/>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="target">current</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <record id="view_hr_employee_tree_inherit_tennis_club" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit.tennis.club</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="replace"/>
+            <xpath expr="//field[@name='job_id']" position="replace"/>
+            <xpath expr="//field[@name='parent_id']" position="replace"/>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="position"/>
+            </xpath>
+            <!-- Добавляем кнопку дохода тренера (рядом со столбцами списка) -->
+            <xpath expr="//list" position="inside">
+                <button name="%(tennis_club_management.action_trainer_revenue_report_wizard)d"
+                        type="action"
+                        string="Доход"
+                        icon="fa-dollar"
+                        invisible="position != 'trainer'"
+                        groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"
+                        context="{'active_id': id, 'default_employee_id': id, 'simple_view': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Представление списка всех сотрудников -->
+    <record id="view_hr_employee_all_tree" model="ir.ui.view">
+        <field name="name">hr.employee.all.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <list string="Все сотрудники" decoration-success="is_manager" decoration-muted="not active" create="true" edit="true" delete="true">
+                <field name="name"/>
+                <field name="sports_center_id"/>
+                <field name="position"/>
+                <field name="work_hours_per_month"/>
+                <field name="hourly_rate"/>
+                <field name="monthly_salary"/>
+                <field name="mobile_phone"/>
+                <field name="work_email"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Представление поиска всех сотрудников -->
+    <record id="view_hr_employee_all_search" model="ir.ui.view">
+        <field name="name">hr.employee.all.search</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <search string="Поиск сотрудников">
+                <field name="name"/>
+                <field name="mobile_phone"/>
+                <field name="work_email"/>
+                <field name="sports_center_id"/>
+                <field name="position"/>
+                <separator/>
+                <filter string="Активные" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Неактивные" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Менеджеры" name="managers" domain="[('position', '=', 'manager')]"/>
+                <filter string="Тренеры" name="trainers" domain="[('position', '=', 'trainer')]"/>
+                <separator/>
+                <filter string="Без спортивного центра" name="no_center" domain="[('sports_center_id', '=', False)]"/>
+                <group expand="0" string="Группировка">
+                    <filter string="По спортивному центру" name="group_sports_center" context="{'group_by': 'sports_center_id'}"/>
+                    <filter string="По должности" name="group_position" context="{'group_by': 'position'}"/>
+                    <filter string="По активности" name="group_active" context="{'group_by': 'active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_hr_employee_all" model="ir.actions.act_window">
+        <field name="name">Все сотрудники</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_hr_employee_all_tree"/>
+        <field name="search_view_id" ref="view_hr_employee_all_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте первого сотрудника!
+            </p>
+            <p>
+                Здесь вы можете управлять всеми сотрудниками всех спортивных центров.
+                Вы можете фильтровать по спортивному центру, должности (менеджер или тренер).
+                Помните: у одного спортивного центра может быть только один менеджер.
+            </p>
+        </field>
+    </record>
+
+</odoo>
