@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Представление списка теннисных кортов -->
+    <record id="view_tennis_court_tree" model="ir.ui.view">
+        <field name="name">tennis.court.tree</field>
+        <field name="model">tennis.court</field>
+        <field name="arch" type="xml">
+            <list string="Теннисные корты" decoration-info="state == 'maintenance'" decoration-muted="state == 'closed'">
+                <field name="name"/>
+                <field name="sports_center_id"/>
+                <field name="court_number"/>
+                <field name="state"/>
+                <field name="surface_type"/>
+                <field name="capacity"/>
+                <field name="work_hours"/>
+                <field name="has_lighting"/>
+                <field name="has_roof"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Представление формы теннисного корта -->
+    <record id="view_tennis_court_form" model="ir.ui.view">
+        <field name="name">tennis.court.form</field>
+        <field name="model">tennis.court</field>
+        <field name="arch" type="xml">
+            <form string="Теннисный корт">
+                <header>
+                    <button name="action_set_available" type="object" string="Доступен" class="btn-primary" 
+                            invisible="state == 'available'"/>
+                    <button name="action_set_maintenance" type="object" string="На обслуживании" class="btn-warning"
+                            invisible="state == 'maintenance'"/>
+                    <button name="action_set_closed" type="object" string="Закрыт" class="btn-secondary"
+                            invisible="state == 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="available,maintenance,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_sports_center" type="object" class="oe_stat_button" icon="fa-building">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Спортивный центр</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Название корта"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sports_center_id" options="{'no_create': True}"/>
+                            <field name="court_number"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="surface_type"/>
+                            <field name="capacity"/>
+                            <field name="work_hours" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="has_lighting"/>
+                            <field name="has_roof"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Представление формы теннисного корта для тренеров (только чтение) -->
+    <record id="view_tennis_court_form_trainer" model="ir.ui.view">
+        <field name="name">tennis.court.form.trainer</field>
+        <field name="model">tennis.court</field>
+        <field name="inherit_id" ref="view_tennis_court_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Скрываем кнопки изменения статуса для тренеров -->
+            <xpath expr="//button[@name='action_set_available']" position="attributes">
+                <attribute name="invisible">is_trainer or state == 'available'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_set_maintenance']" position="attributes">
+                <attribute name="invisible">is_trainer or state == 'maintenance'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_set_closed']" position="attributes">
+                <attribute name="invisible">is_trainer or state == 'closed'</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='sports_center_id']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='court_number']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='surface_type']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='capacity']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='has_lighting']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='has_roof']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='active']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Представление поиска теннисных кортов -->
+    <record id="view_tennis_court_search" model="ir.ui.view">
+        <field name="name">tennis.court.search</field>
+        <field name="model">tennis.court</field>
+        <field name="arch" type="xml">
+            <search string="Поиск теннисных кортов">
+                <field name="name"/>
+                <field name="sports_center_id"/>
+                <field name="surface_type"/>
+                <filter string="Доступные" name="available" domain="[('state', '=', 'available')]"/>
+                <filter string="На обслуживании" name="maintenance" domain="[('state', '=', 'maintenance')]"/>
+                <filter string="Закрытые" name="closed" domain="[('state', '=', 'closed')]"/>
+                <filter string="С освещением" name="with_lighting" domain="[('has_lighting', '=', True)]"/>
+                <filter string="С крышей" name="with_roof" domain="[('has_roof', '=', True)]"/>
+                <separator/>
+                <filter string="Активные" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Неактивные" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Группировка">
+                    <filter string="По центру" name="group_center" context="{'group_by': 'sports_center_id'}"/>
+                    <filter string="По состоянию" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="По типу покрытия" name="group_surface" context="{'group_by': 'surface_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Представление календаря теннисных кортов -->
+    <record id="view_tennis_court_calendar" model="ir.ui.view">
+        <field name="name">tennis.court.calendar</field>
+        <field name="model">tennis.court</field>
+        <field name="arch" type="xml">
+            <calendar string="Теннисные корты" date_start="create_date" color="sports_center_id">
+                <field name="name"/>
+                <field name="sports_center_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Действие для открытия списка теннисных кортов -->
+    <record id="action_tennis_court" model="ir.actions.act_window">
+        <field name="name">Теннисные корты</field>
+        <field name="res_model">tennis.court</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_tennis_court_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте свой первый теннисный корт!
+            </p>
+            <p>
+                Теннисные корты автоматически создаются при настройке спортивного центра.
+                Каждый корт наследует время работы от своего центра.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_tennis_court_by_center" model="ir.actions.act_window">
+        <field name="name">Корты центра</field>
+        <field name="res_model">tennis.court</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('sports_center_id', '=', active_id)]</field>
+        <field name="context">{'default_sports_center_id': active_id}</field>
+    </record>
+
+</odoo>

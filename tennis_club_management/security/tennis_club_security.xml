@@ -1,0 +1,313 @@
+<odoo>
+    <!-- Группы пользователей -->
+    <record id="group_tennis_director" model="res.groups">
+        <field name="name">Директор теннисных клубов</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <field name="comment">Полный доступ ко всем функциям системы управления теннисными клубами</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('base.group_system')), (4, ref('hr.group_hr_manager')), (4, ref('tennis_club_management.group_tennis_settings_access'))]"/>
+    </record>
+
+    <record id="group_tennis_manager" model="res.groups">
+        <field name="name">Менеджер теннисного клуба</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <field name="comment">Управление своим спортивным центром и его ресурсами</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('base.group_system')), (4, ref('hr.group_hr_manager'))]"/>
+    </record>
+
+    <record id="group_tennis_trainer" model="res.groups">
+        <field name="name">Тренер теннисного клуба</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <field name="comment">Доступ к информации своего спортивного центра и собственных тренировок</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('base.group_system')), (4, ref('hr.group_hr_manager'))]"/>
+    </record>
+
+    <record id="group_tennis_settings_access" model="res.groups">
+        <field name="name">Доступ к настройкам теннисного клуба</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <field name="comment">Позволяет просматривать и изменять настройки модуля управления теннисными клубами</field>
+    </record>
+
+    <!-- Спортивные центры -->
+    <record id="rule_sports_center_director" model="ir.rule">
+        <field name="name">Директор: Все спортивные центры</field>
+        <field name="model_id" ref="model_sports_center"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_sports_center_manager" model="ir.rule">
+        <field name="name">Менеджер: Все спортивные центры</field>
+        <field name="model_id" ref="model_sports_center"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_sports_center_trainer" model="ir.rule">
+        <field name="name">Тренер: Все спортивные центры</field>
+        <field name="model_id" ref="model_sports_center"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Сотрудники -->
+    <record id="rule_employee_director" model="ir.rule">
+        <field name="name">Директор: Все сотрудники</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_employee_manager" model="ir.rule">
+        <field name="name">Менеджер: Все сотрудники</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_employee_trainer" model="ir.rule">
+        <field name="name">Тренер: Все сотрудники</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Клиенты -->
+    <record id="rule_partner_director" model="ir.rule">
+        <field name="name">Директор: Все клиенты</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_partner_manager" model="ir.rule">
+        <field name="name">Менеджер: Все клиенты</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_partner_trainer" model="ir.rule">
+        <field name="name">Тренер: Все клиенты</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Теннисные корты -->
+    <record id="rule_court_director" model="ir.rule">
+        <field name="name">Директор: Все корты</field>
+        <field name="model_id" ref="model_tennis_court"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_court_manager" model="ir.rule">
+        <field name="name">Менеджер: Все корты</field>
+        <field name="model_id" ref="model_tennis_court"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_court_trainer" model="ir.rule">
+        <field name="name">Тренер: Все корты</field>
+        <field name="model_id" ref="model_tennis_court"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Записи на тренировки -->
+    <record id="rule_training_booking_director" model="ir.rule">
+        <field name="name">Директор: Все записи на тренировки</field>
+        <field name="model_id" ref="model_training_booking"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_training_booking_manager" model="ir.rule">
+        <field name="name">Менеджер: Все записи на тренировки</field>
+        <field name="model_id" ref="model_training_booking"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_training_booking_trainer" model="ir.rule">
+        <field name="name">Тренер: Все записи на тренировки</field>
+        <field name="model_id" ref="model_training_booking"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Участники тренировок -->
+    <record id="rule_training_booking_participant_director" model="ir.rule">
+        <field name="name">Директор: Все участники тренировок</field>
+        <field name="model_id" ref="model_training_booking_participant"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_training_booking_participant_manager" model="ir.rule">
+        <field name="name">Менеджер: Все участники тренировок</field>
+        <field name="model_id" ref="model_training_booking_participant"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_training_booking_participant_trainer" model="ir.rule">
+        <field name="name">Тренер: Все участники тренировок</field>
+        <field name="model_id" ref="model_training_booking_participant"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_res_users_tennis_internal" model="ir.rule">
+        <field name="name">Тренер/менеджер: доступ к учетным записям</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('tennis_club_management.group_tennis_trainer')), (4, ref('tennis_club_management.group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Цены на типы тренировок -->
+    <record id="rule_sports_center_training_price_director" model="ir.rule">
+        <field name="name">Директор: Все цены на типы тренировок</field>
+        <field name="model_id" ref="model_sports_center_training_price"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_sports_center_training_price_manager" model="ir.rule">
+        <field name="name">Менеджер: Все цены на типы тренировок</field>
+        <field name="model_id" ref="model_sports_center_training_price"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_sports_center_training_price_trainer" model="ir.rule">
+        <field name="name">Тренер: Все цены на типы тренировок (только чтение)</field>
+        <field name="model_id" ref="model_sports_center_training_price"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Группы для тренировок -->
+    <record id="rule_training_group_director" model="ir.rule">
+        <field name="name">Директор: Все группы для тренировок</field>
+        <field name="model_id" ref="model_training_group"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_director'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_training_group_manager" model="ir.rule">
+        <field name="name">Менеджер: Все группы для тренировок</field>
+        <field name="model_id" ref="model_training_group"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_training_group_trainer" model="ir.rule">
+        <field name="name">Тренер: Все группы для тренировок (только чтение)</field>
+        <field name="model_id" ref="model_training_group"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_tennis_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>

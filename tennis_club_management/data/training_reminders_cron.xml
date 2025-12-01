@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cron job для отправки напоминаний о тренировках -->
+    <record id="ir_cron_send_training_reminders" model="ir.cron">
+        <field name="name">Отправка напоминаний о тренировках</field>
+        <field name="model_id" ref="model_training_booking"/>
+        <field name="state">code</field>
+        <field name="code">model.send_training_reminders()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    
+    <!-- Cron job для автоматического изменения статусов тренировок -->
+    <record id="ir_cron_auto_update_training_states" model="ir.cron">
+        <field name="name">Автоматическое изменение статусов тренировок</field>
+        <field name="model_id" ref="model_training_booking"/>
+        <field name="state">code</field>
+        <field name="code">model.auto_update_training_states()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>
+

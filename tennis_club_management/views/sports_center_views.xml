@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Представление списка спортивных центров -->
+    <record id="view_sports_center_tree" model="ir.ui.view">
+        <field name="name">sports.center.tree</field>
+        <field name="model">sports.center</field>
+        <field name="arch" type="xml">
+            <list string="Спортивные центры" decoration-info="not active">
+                <header>
+                    <button name="%(tennis_club_management.action_full_analytics_wizard)d"
+                            type="action"
+                            string="Полная аналитика"
+                            class="btn-primary"
+                            groups="tennis_club_management.group_tennis_director"/>
+                </header>
+                <field name="name"/>
+                <field name="manager_id"/>
+                <field name="work_start_time"/>
+                <field name="work_end_time"/>
+                <field name="court_count"/>
+                <field name="total_courts"/>
+                <!-- <field name="total_trainers"/> -->
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Представление формы спортивного центра -->
+    <record id="view_sports_center_form" model="ir.ui.view">
+        <field name="name">sports.center.form</field>
+        <field name="model">sports.center</field>
+        <field name="arch" type="xml">
+            <form string="Спортивный центр">
+                <header>
+                    <button name="action_open_courts" type="object" string="Корты" class="btn-primary"/>
+                    <button name="%(action_sports_center_employee_modal)d" type="action" string="Сотрудники" class="btn-secondary"/>
+                    <button name="action_open_training_prices" type="object" string="Цены на тренировки" class="btn-secondary" groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <button name="action_open_analytics" type="object" string="Аналитика" class="btn-secondary" groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <button name="%(tennis_club_management.action_full_analytics_wizard)d" type="action" string="Полная аналитика" class="btn-secondary" groups="tennis_club_management.group_tennis_director"/>
+                    <!-- <button name="action_open_trainers" type="object" string="Тренеры" class="btn-secondary"/> -->
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_courts" type="object" class="oe_stat_button" icon="fa-tennis-ball">
+                            <field name="total_courts" widget="statinfo" string="Корты"/>
+                        </button>
+                        <button name="action_open_employees" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="total_employees" widget="statinfo" string="Сотрудники"/>
+                        </button>
+                        <!-- <button name="action_open_trainers" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="total_trainers" widget="statinfo" string="Тренеры"/>
+                        </button> -->
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Название спортивного центра"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="manager_id" options="{'no_create': True}"/>
+                            <field name="court_count" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="work_start_time" widget="float_time"/>
+                            <field name="work_end_time" widget="float_time"/>
+                            <field name="current_datetime" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Фотографии" name="images">
+                            <group>
+                                <field name="image_ids" readonly="0" nolabel="1">
+                                    <list string="Фотографии" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="image" widget="image"/>
+                                    </list>
+                                </field>
+                                <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+                                    <p><strong>Примечание:</strong> Можно загрузить максимум 5 фотографий для спортивного центра.</p>
+                                    <p>Используйте перетаскивание для изменения порядка фотографий.</p>
+                                </div>
+                            </group>
+                        </page>
+                        <page string="Корты" name="courts">
+                            <field name="court_ids" readonly="1">
+                                <list string="Теннисные корты" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="court_number"/>
+                                    <field name="state"/>
+                                    <field name="surface_type"/>
+                                    <field name="capacity"/>
+                                    <field name="has_lighting"/>
+                                    <field name="has_roof"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Сотрудники" name="employees">
+                            <field name="employee_ids" readonly="1">
+                                <list string="Сотрудники спортивного центра" decoration-success="is_manager" decoration-muted="not active">
+                                    <field name="name"/>
+                                    <field name="position"/>
+                                    <field name="work_hours_per_month"/>
+                                    <field name="hourly_rate"/>
+                                    <field name="monthly_salary"/>
+                                    <field name="mobile_phone"/>
+                                    <field name="work_email"/>
+                                    <field name="active"/>
+                                    <button name="%(tennis_club_management.action_trainer_revenue_report_wizard)d"
+                                            type="action"
+                                            string="Доход"
+                                            icon="fa-dollar"
+                                            invisible="position != 'trainer'"
+                                            groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"
+                                            context="{'active_id': id, 'default_employee_id': id, 'simple_view': True}"/>
+                                </list>
+                            </field>
+                        </page>
+                        <!-- <page string="Тренеры" name="trainers">
+                            <field name="trainer_ids" readonly="1">
+                                <list string="Тренеры">
+                                    <field name="name"/>
+                                    <field name="work_email"/>
+                                    <field name="mobile_phone"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page> -->
+                        <page string="Цены на типы тренировок" name="training_prices" groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager">
+                            <field name="training_price_ids" readonly="0" nolabel="1">
+                                <list string="Цены на типы тренировок" editable="bottom">
+                                    <field name="training_type_id" required="1"/>
+                                    <field name="training_type_category" readonly="1"/>
+                                    <field name="price_per_hour" required="1"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                            <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+                                <p><strong>Примечание:</strong> Здесь вы можете настроить стоимость различных типов тренировок для данного спортивного центра.</p>
+                                <p>Для каждого типа тренировки можно задать свою цену за час.</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <field name="is_trainer" invisible="1"/>
+            </form>
+        </field>
+    </record>
+    <record id="view_sports_center_form_director" model="ir.ui.view">
+        <field name="name">sports.center.form.director</field>
+        <field name="model">sports.center</field>
+        <field name="inherit_id" ref="view_sports_center_form"/>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">true</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sports_center_form_manager" model="ir.ui.view">
+        <field name="name">sports.center.form.manager</field>
+        <field name="model">sports.center</field>
+        <field name="inherit_id" ref="view_sports_center_form"/>
+        <field name="priority">15</field>
+        <field name="arch" type="xml">
+            <!-- Убираем возможность создания для менеджеров -->
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Представление формы спортивного центра для тренеров (все поля readonly) -->
+    <record id="view_sports_center_form_trainer" model="ir.ui.view">
+        <field name="name">sports.center.form.trainer</field>
+        <field name="model">sports.center</field>
+        <field name="inherit_id" ref="view_sports_center_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='manager_id']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='work_start_time']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='work_end_time']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='image_ids']" position="attributes">
+                <attribute name="readonly">is_trainer</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Представление поиска спортивных центров -->
+    <record id="view_sports_center_search" model="ir.ui.view">
+        <field name="name">sports.center.search</field>
+        <field name="model">sports.center</field>
+        <field name="arch" type="xml">
+            <search string="Поиск спортивных центров">
+                <field name="name"/>
+                <field name="manager_id"/>
+                <filter string="Активные" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Неактивные" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="С кортами" name="with_courts" domain="[('total_courts', '>', 0)]"/>
+                <filter string="Без кортов" name="without_courts" domain="[('total_courts', '=', 0)]"/>
+                <group expand="0" string="Группировка">
+                    <filter string="По менеджеру" name="group_manager" context="{'group_by': 'manager_id'}"/>
+                    <filter string="По активности" name="group_active" context="{'group_by': 'active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Представление календаря спортивных центров -->
+    <record id="view_sports_center_calendar" model="ir.ui.view">
+        <field name="name">sports.center.calendar</field>
+        <field name="model">sports.center</field>
+        <field name="arch" type="xml">
+            <calendar string="Спортивные центры" date_start="create_date" color="manager_id">
+                <field name="name"/>
+                <field name="manager_id"/>
+                <field name="total_courts"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Действие для открытия списка спортивных центров -->
+    <record id="action_sports_center" model="ir.actions.act_window">
+        <field name="name">Спортивные центры</field>
+        <field name="res_model">sports.center</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_sports_center_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте свой первый спортивный центр!
+            </p>
+            <p>
+                Спортивные центры - это основные объекты системы управления теннисными клубами.
+                Каждый центр имеет менеджера, время работы и теннисные корты.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_sports_center_dynamic" model="ir.actions.server">
+        <field name="name">Спортивные центры</field>
+        <field name="model_id" ref="model_sports_center"/>
+        <field name="state">code</field>
+        <field name="code">action = env['sports.center'].action_open_my_centers()</field>
+    </record>
+
+    <!-- Модальное окно для настройки спортивного центра (будет добавлено в будущих версиях) -->
+    <!--
+    <record id="view_sports_center_config_wizard" model="ir.ui.view">
+        <field name="name">sports.center.config.wizard</field>
+        <field name="model">sports.center</field>
+        <field name="arch" type="xml">
+            <form string="Настройка спортивного центра">
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="manager_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="work_start_time" widget="float_time"/>
+                        <field name="work_end_time" widget="float_time"/>
+                        <field name="court_count"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Сохранить" type="object" name="action_save_config" class="btn-primary"/>
+                    <button string="Отмена" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    -->
+
+</odoo>

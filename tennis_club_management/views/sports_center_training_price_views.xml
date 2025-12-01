@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Цены на типы тренировок - список -->
+    <record id="view_sports_center_training_price_tree" model="ir.ui.view">
+        <field name="name">sports.center.training.price.tree</field>
+        <field name="model">sports.center.training.price</field>
+        <field name="arch" type="xml">
+            <list string="Цены на типы тренировок">
+                <field name="sports_center_id" optional="hide"/>
+                <field name="training_type_id" required="1"/>
+                <field name="training_type_category"/>
+                <field name="price_per_hour"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Цены на типы тренировок - форма -->
+    <record id="view_sports_center_training_price_form" model="ir.ui.view">
+        <field name="name">sports.center.training.price.form</field>
+        <field name="model">sports.center.training.price</field>
+        <field name="arch" type="xml">
+            <form string="Цена на тип тренировки">
+                <header>
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sports_center_id" required="1"/>
+                            <field name="training_type_id" required="1"/>
+                        </group>
+                        <group>
+                            <field name="price_per_hour" required="1"/>
+                            <field name="training_type_category" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Цены на типы тренировок - поиск -->
+    <record id="view_sports_center_training_price_search" model="ir.ui.view">
+        <field name="name">sports.center.training.price.search</field>
+        <field name="model">sports.center.training.price</field>
+        <field name="arch" type="xml">
+            <search string="Цены на типы тренировок">
+                <field name="sports_center_id"/>
+                <field name="training_type_id"/>
+                <field name="training_type_category"/>
+                <field name="price_per_hour"/>
+                <separator/>
+                <filter string="Активные" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Архивные" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group string="Группировка">
+                    <filter string="По спортивному центру" name="group_sports_center" context="{'group_by': 'sports_center_id'}"/>
+                    <filter string="По типу тренировки" name="group_training_type" context="{'group_by': 'training_type_id'}"/>
+                    <filter string="По категории" name="group_category" context="{'group_by': 'training_type_category'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Действие для цен на типы тренировок -->
+    <record id="action_sports_center_training_price" model="ir.actions.act_window">
+        <field name="name">Цены на типы тренировок</field>
+        <field name="res_model">sports.center.training.price</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_sports_center_training_price_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте первую цену на тип тренировки
+            </p>
+            <p>
+                Здесь вы можете настроить стоимость различных типов тренировок для каждого спортивного центра.
+            </p>
+        </field>
+    </record>
+
+</odoo>
+
+
+
+
+
+
+
+
+
+
+

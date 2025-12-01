@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Инициализация поля balance для res_partner -->
+    <function model="res.partner" name="_init_balance_field"/>
+</odoo>

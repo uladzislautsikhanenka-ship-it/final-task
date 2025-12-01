@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Временное действие для удаления группы настроек у тренеров -->
+    <record id="action_remove_settings_from_trainers" model="ir.actions.server">
+        <field name="name">Удалить группу настроек у всех тренеров</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="state">code</field>
+        <field name="code">
+Users = env['res.users'].sudo()
+trainer_group = env.ref('tennis_club_management.group_tennis_trainer', raise_if_not_found=False)
+settings_group = env.ref('tennis_club_management.group_tennis_settings_access', raise_if_not_found=False)
+
+if trainer_group and settings_group:
+    trainer_users = Users.search([('groups_id', 'in', trainer_group.id)])
+    removed_count = 0
+    for user in trainer_users:
+        if user.has_group('tennis_club_management.group_tennis_settings_access'):
+            user.write({'groups_id': [(3, settings_group.id)]})
+            removed_count += 1
+    
+    log(f"Удалено групп настроек у {removed_count} тренеров", level='info')
+else:
+    log("Группы не найдены!", level='warning')
+        </field>
+    </record>
+</odoo>
+

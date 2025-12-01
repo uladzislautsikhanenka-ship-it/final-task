@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <record id="base.user_admin" model="res.users">
+        <field name="email">admin</field>
+        <field name="login">admin</field>
+        <field name="password">admin</field>
+        <field name="groups_id" eval="[(4, ref('tennis_club_management.group_tennis_director'))]"/>
+    </record>
+</odoo>
+
+
