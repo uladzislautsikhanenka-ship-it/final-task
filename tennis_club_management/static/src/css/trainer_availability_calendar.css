@@ -1,0 +1,441 @@
+/* Стили для календаря доступности тренера с правой панелью */
+
+.o_trainer_availability_calendar_wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    gap: 16px;
+}
+
+.o_calendar_container {
+    flex: 1;
+    min-width: 0;
+}
+
+.o_trainings_sidebar_container {
+    width: 350px;
+    min-width: 350px;
+    background: #f8f9fa;
+    border-left: 1px solid #dee2e6;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+.o_trainer_trainings_sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.o_trainer_trainings_header {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+}
+
+.o_trainer_trainings_header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.o_trainer_trainings_header h3 i {
+    color: #007bff;
+}
+
+.o_trainings_today_section,
+.o_trainings_upcoming_section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.o_section_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.o_section_title i {
+    color: #6c757d;
+}
+
+.o_trainings_list_today,
+.o_trainings_list_upcoming {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.o_training_card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.o_training_card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    border-color: #007bff;
+}
+
+.o_training_today {
+    border-left: 4px solid #28a745;
+}
+
+.o_training_upcoming {
+    border-left: 4px solid #007bff;
+}
+
+.o_training_date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.o_training_date i {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.o_training_time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: #212529;
+}
+
+.o_training_time i {
+    color: #007bff;
+    font-size: 14px;
+}
+
+.o_training_time strong {
+    font-weight: 600;
+    color: #212529;
+}
+
+.o_training_divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 12px 0;
+}
+
+.o_training_field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    gap: 4px;
+}
+
+.o_field_label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.o_field_value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+    padding-left: 4px;
+}
+
+.o_training_state {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Подсветка дней с тренировками в календаре */
+.o_calendar_day_with_training {
+    background-color: #d4edda !important;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    border-radius: 4px;
+    position: relative;
+}
+
+.o_calendar_day_with_training:hover {
+    background-color: #c3e6cb !important;
+    background: linear-gradient(135deg, #c3e6cb 0%, #b1dfbb 100%) !important;
+}
+
+/* Подсветка дней с доступностью тренера (зеленоватый цвет) */
+.o_calendar_day_with_availability {
+    background-color: #d4edda !important;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    border-radius: 4px !important;
+    position: relative;
+}
+
+.o_calendar_day_with_availability:hover {
+    background-color: #c3e6cb !important;
+    background: linear-gradient(135deg, #c3e6cb 0%, #b1dfbb 100%) !important;
+}
+
+/* Убеждаемся, что зеленоватый цвет применяется ко всем типам ячеек календаря */
+.fc-daygrid-day.o_calendar_day_with_availability,
+.fc-timegrid-col.o_calendar_day_with_availability,
+.fc-day.o_calendar_day_with_availability,
+td.o_calendar_day_with_availability,
+.o_calendar_cell.o_calendar_day_with_availability,
+[class*="calendar"].o_calendar_day_with_availability {
+    background-color: #d4edda !important;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    border-radius: 4px !important;
+}
+
+.fc-daygrid-day.o_calendar_day_with_availability:hover,
+.fc-timegrid-col.o_calendar_day_with_availability:hover,
+.fc-day.o_calendar_day_with_availability:hover,
+td.o_calendar_day_with_availability:hover,
+.o_calendar_cell.o_calendar_day_with_availability:hover,
+[class*="calendar"].o_calendar_day_with_availability:hover {
+    background-color: #c3e6cb !important;
+    background: linear-gradient(135deg, #c3e6cb 0%, #b1dfbb 100%) !important;
+}
+
+/* Более специфичные селекторы для календаря доступности тренера */
+.o_calendar_view[data-model="trainer.availability"] .fc-daygrid-day.o_calendar_day_with_availability,
+.o_calendar_view[data-model="trainer.availability"] .fc-timegrid-col.o_calendar_day_with_availability,
+.o_calendar_view[data-model="trainer.availability"] .fc-day.o_calendar_day_with_availability,
+.o_calendar_view[data-model="trainer.availability"] td.o_calendar_day_with_availability {
+    background-color: #d4edda !important;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    border-radius: 4px !important;
+}
+
+/* Окрашиваем ячейки, которые содержат события доступности */
+.o_calendar_view[data-model="trainer.availability"] .fc-daygrid-day:has(.fc-event),
+.o_calendar_view[data-model="trainer.availability"] .fc-daygrid-day:has(.fc-daygrid-event),
+.o_calendar_view[data-model="trainer.availability"] .fc-timegrid-col:has(.fc-event),
+.o_calendar_view[data-model="trainer.availability"] .fc-timegrid-col:has(.fc-timegrid-event) {
+    background-color: #d4edda !important;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    border-radius: 4px !important;
+}
+
+/* Для календаря Odoo - подсветка ячеек */
+.o_calendar_view .o_calendar_day_with_training,
+.fc-daygrid-day.o_calendar_day_with_training,
+.fc-day.o_calendar_day_with_training {
+    background-color: #d4edda !important;
+}
+
+/* Для чисел в ячейках с тренировками */
+.o_calendar_day_with_training .fc-daygrid-day-number,
+.o_calendar_day_with_training > div,
+.o_calendar_day_with_training > span {
+    font-weight: 600;
+    color: #155724;
+}
+
+.o_training_state .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.o_no_trainings_today,
+.o_no_trainings_upcoming {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.o_no_trainings_today p,
+.o_no_trainings_upcoming p {
+    margin: 0;
+    font-size: 13px;
+}
+
+.o_loading_trainings {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.o_loading_trainings i {
+    margin-right: 8px;
+}
+
+/* Скрываем текстовые надписи событий в календаре доступности тренера */
+/* Оставляем только зеленоватый цвет для дней, когда тренер работает */
+.o_calendar_view[data-model="trainer.availability"] .fc-event,
+.o_calendar_view[data-model="trainer.availability"] .o_calendar_event,
+.o_calendar_view[data-model="trainer.availability"] .fc-daygrid-event,
+.o_calendar_view[data-model="trainer.availability"] .fc-timegrid-event,
+.o_calendar_view[data-model="trainer.availability"] .fc-list-event {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    color: transparent !important;
+    border: none !important;
+}
+
+/* Скрываем все текстовые элементы внутри событий */
+.o_calendar_view[data-model="trainer.availability"] .fc-event-title,
+.o_calendar_view[data-model="trainer.availability"] .fc-event-title-container,
+.o_calendar_view[data-model="trainer.availability"] .fc-event-main,
+.o_calendar_view[data-model="trainer.availability"] .fc-event-time,
+.o_calendar_view[data-model="trainer.availability"] .fc-list-event-title,
+.o_calendar_view[data-model="trainer.availability"] .fc-event-main-frame,
+.o_calendar_view[data-model="trainer.availability"] .fc-event-title.fc-sticky,
+.o_calendar_view[data-model="trainer.availability"] .fc-event-resizer,
+.o_calendar_view[data-model="trainer.availability"] .fc-event * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-indent: -9999px !important;
+    color: transparent !important;
+}
+
+/* Альтернативный способ - скрываем текст через общий селектор для календаря доступности */
+body:has(.o_calendar_view[data-model="trainer.availability"]) .fc-event-title,
+body:has(.o_calendar_view[data-model="trainer.availability"]) .fc-event-title-container,
+body:has(.o_calendar_view[data-model="trainer.availability"]) .fc-list-event-title,
+body:has(.o_calendar_view[data-model="trainer.availability"]) .fc-event-main-frame,
+body:has(.o_calendar_view[data-model="trainer.availability"]) .fc-event-main {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .o_trainings_sidebar_container {
+        width: 300px;
+        min-width: 300px;
+    }
+}
+
+@media (max-width: 992px) {
+    .o_trainer_availability_calendar_wrapper {
+        flex-direction: column;
+    }
+    
+    .o_trainings_sidebar_container {
+        width: 100%;
+        min-width: 100%;
+        border-left: none;
+        border-top: 1px solid #dee2e6;
+        max-height: 400px;
+    }
+}
+
+/* Стили для календаря выбора даты тренировки - доступные и недоступные даты */
+.trainer-available-day,
+td.trainer-available-day,
+.datepicker td.trainer-available-day,
+.o_datepicker td.trainer-available-day,
+[class*="datepicker"] td.trainer-available-day {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    font-weight: bold !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+}
+
+.trainer-available-day:hover,
+td.trainer-available-day:hover,
+.datepicker td.trainer-available-day:hover,
+.o_datepicker td.trainer-available-day:hover {
+    background-color: #c3e6cb !important;
+    color: #0f3d1a !important;
+}
+
+.trainer-unavailable-day,
+td.trainer-unavailable-day,
+.datepicker td.trainer-unavailable-day,
+.o_datepicker td.trainer-unavailable-day,
+[class*="datepicker"] td.trainer-unavailable-day {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    text-decoration: line-through;
+    border-radius: 4px !important;
+}
+
+/* Для календаря Odoo DatePicker */
+.o_datepicker .trainer-available-day,
+.datepicker .trainer-available-day {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border: 2px solid #28a745 !important;
+    border-radius: 4px !important;
+}
+
+.o_datepicker .trainer-unavailable-day,
+.datepicker .trainer-unavailable-day {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    opacity: 0.5 !important;
+    border: 1px dashed #dee2e6 !important;
+    border-radius: 4px !important;
+    cursor: not-allowed !important;
+}
+
+/* Убеждаемся, что стили применяются к ячейкам таблицы календаря */
+.o_datepicker table td.trainer-available-day,
+.datepicker table td.trainer-available-day,
+.o_datepicker table td.day.trainer-available-day,
+.datepicker table td.day.trainer-available-day {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    font-weight: bold !important;
+}
+
+.o_datepicker table td.trainer-unavailable-day,
+.datepicker table td.trainer-unavailable-day,
+.o_datepicker table td.day.trainer-unavailable-day,
+.datepicker table td.day.trainer-unavailable-day {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    opacity: 0.5 !important;
+    text-decoration: line-through;
+}
+
