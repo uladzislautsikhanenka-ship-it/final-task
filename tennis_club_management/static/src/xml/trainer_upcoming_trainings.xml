@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Виджет количества будущих тренировок для тренеров -->
+    <t t-name="tennis_club_management.TrainerUpcomingTrainingsWidget" owl="1">
+        <div t-if="props.visible" 
+             class="o_trainer_upcoming_trainings_widget d-flex align-items-center" 
+             style="margin-right: 15px; padding: 10px 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 25px; box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3); cursor: default; transition: all 0.3s ease; display: flex !important; visibility: visible !important; opacity: 1 !important;">
+            <i class="fa fa-calendar-check-o" style="font-size: 20px; color: #ffffff; margin-right: 10px; opacity: 0.95;"></i>
+            <span class="o_trainer_trainings_count" style="font-size: 26px; font-weight: bold; color: #ffffff; margin-right: 8px; min-width: 35px; text-align: center; line-height: 1;">
+                <t t-esc="props.count"/>
+            </span>
+            <span class="o_trainer_trainings_label" style="font-size: 14px; color: #ffffff; white-space: nowrap; font-weight: 500; opacity: 0.95;">
+                будущих тренировок
+            </span>
+        </div>
+    </t>
+    
+    <!-- Патч шаблона NavBar удален - виджет создается через JavaScript для избежания дублирования -->
+</templates>

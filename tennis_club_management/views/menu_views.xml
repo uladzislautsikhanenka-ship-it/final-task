@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_tennis_club_management" 
+              name="Теннисные клубы" 
+              sequence="10" 
+              web_icon="tennis_club_management,static/description/icon.png"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager,tennis_club_management.group_tennis_trainer"/>
+
+    <!-- Подменю управления - доступно ТОЛЬКО директорам -->
+    <menuitem id="menu_tennis_club_management_management" 
+              name="Управление" 
+              parent="menu_tennis_club_management" 
+              sequence="10"
+              groups="tennis_club_management.group_tennis_director"/>
+    <menuitem id="menu_sports_center_manager_trainer" 
+              name="Спортивный центр" 
+              parent="menu_tennis_club_management" 
+              action="action_sports_center_dynamic" 
+              sequence="10"
+              groups="tennis_club_management.group_tennis_manager,tennis_club_management.group_tennis_trainer"/>
+    <menuitem id="menu_res_partner_manager" 
+              name="Клиенты" 
+              parent="menu_tennis_club_management" 
+              action="action_res_partner_simple" 
+              sequence="11"
+              groups="tennis_club_management.group_tennis_manager"/>
+
+    <menuitem id="menu_tennis_club_management_my_work"
+              name="Моя работа"
+              parent="menu_tennis_club_management"
+              action="action_tennis_my_work"
+              sequence="12"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager,tennis_club_management.group_tennis_trainer"/>
+
+    <menuitem id="menu_sports_center" 
+              name="Спортивные центры" 
+              parent="menu_tennis_club_management_management" 
+              action="action_sports_center_dynamic" 
+              sequence="10"
+              groups="tennis_club_management.group_tennis_director"/>
+
+    <menuitem id="menu_tennis_court" 
+              name="Теннисные корты" 
+              parent="menu_tennis_club_management_management" 
+              action="action_tennis_court" 
+              sequence="20"
+              groups="tennis_club_management.group_tennis_director"/>
+
+    <menuitem id="menu_hr_employee_all" 
+              name="Все сотрудники" 
+              parent="menu_tennis_club_management_management" 
+              action="action_hr_employee_all" 
+              sequence="25"
+              groups="tennis_club_management.group_tennis_director"/>
+
+    <!-- Меню клиентов в меню "Управление" для директоров -->
+    <menuitem id="menu_res_partner" 
+              name="Клиенты" 
+              parent="menu_tennis_club_management_management" 
+              action="action_res_partner_simple" 
+              sequence="30"
+              groups="tennis_club_management.group_tennis_director"/>
+
+    <menuitem id="menu_tennis_club_management_training" 
+              name="Тренировки" 
+              parent="menu_tennis_club_management" 
+              sequence="15"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <menuitem id="menu_training_booking_calendar" 
+              name="Тренировки" 
+              parent="menu_tennis_club_management_training" 
+              action="action_training_calendar" 
+              sequence="10"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Меню записи на тренировки (список) (доступно только директорам и менеджерам) -->
+    <menuitem id="menu_training_booking" 
+              name="Список записей" 
+              parent="menu_tennis_club_management_training" 
+              action="action_training_booking" 
+              sequence="20"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Меню "На рассмотрение" для менеджеров -->
+    <menuitem id="menu_training_booking_pending" 
+              name="На рассмотрение" 
+              parent="menu_tennis_club_management_training" 
+              action="action_training_booking_pending_approval" 
+              sequence="15"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Меню "Группа" для менеджеров и директоров -->
+    <menuitem id="menu_training_group" 
+              name="Группа" 
+              parent="menu_tennis_club_management_training" 
+              action="tennis_club_management.action_training_group" 
+              sequence="25"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Подменю настройки (только для директоров и менеджеров) -->
+    <menuitem id="menu_tennis_club_management_config" 
+              name="Настройки" 
+              parent="menu_tennis_club_management" 
+              sequence="20"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Меню типов тренировок (для директоров и менеджеров) -->
+    <menuitem id="menu_training_type" 
+              name="Типы тренировок" 
+              parent="menu_tennis_club_management_config" 
+              action="action_training_type" 
+              sequence="10"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Меню цен на типы тренировок (для директоров и менеджеров) -->
+    <menuitem id="menu_sports_center_training_price" 
+              name="Цены на типы тренировок" 
+              parent="menu_tennis_club_management_config" 
+              action="action_sports_center_training_price" 
+              sequence="20"
+              groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+
+    <!-- Меню конфигурации -->
+    <menuitem id="menu_tennis_club_management_config_settings" 
+              name="Конфигурация" 
+              parent="menu_tennis_club_management_config" 
+              sequence="10"
+              groups="tennis_club_management.group_tennis_director"/>
+
+    <menuitem id="menu_sports_center_trainer" 
+              name="Календарь" 
+              parent="menu_tennis_club_management" 
+              action="action_tennis_trainer_calendar" 
+              sequence="13"
+              groups="tennis_club_management.group_tennis_trainer"/>
+
+    <menuitem id="menu_sports_center_root_director"
+              name="Спортивные центры"
+              parent="menu_tennis_club_management"
+              action="action_sports_center_dynamic"
+              sequence="5"
+              groups="tennis_club_management.group_tennis_director"/>
+              
+    <menuitem id="menu_full_analytics_top"
+              name="Полная аналитика"
+              parent="menu_tennis_club_management"
+              action="action_full_analytics_wizard"
+              sequence="60"/>
+
+</odoo>

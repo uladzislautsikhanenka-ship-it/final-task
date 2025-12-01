@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_tennis_role_dashboard" model="ir.actions.act_url">
+        <field name="name">Мой кабинет</field>
+        <field name="url">/tennis_club/dashboard</field>
+        <field name="target">self</field>
+    </record>
+    <delete id="action_tennis_my_work" model="ir.actions.server"/>
+    <delete id="action_tennis_trainer_calendar" model="ir.actions.server"/>
+
+    <record id="action_tennis_my_work" model="ir.actions.act_url">
+        <field name="name">Моя работа</field>
+        <field name="url">/tennis_club/my_work</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_tennis_trainer_calendar" model="ir.actions.act_url">
+        <field name="name">Календарь</field>
+        <field name="url">/tennis_club/trainer_calendar</field>
+        <field name="target">self</field>
+    </record>
+</odoo>
