@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_full_analytics_wizard_form" model="ir.ui.view">
+        <field name="name">full.analytics.wizard.form</field>
+        <field name="model">full.analytics.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Полная аналитика" create="false" edit="true">
+                <header>
+                    <button name="action_recompute" type="object" string="Пересчитать" class="btn-primary"/>
+                    <button name="action_print_pdf" type="object" string="Печать (PDF)" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" class="oe_stat_button" icon="fa-line-chart" name="action_recompute">
+                            <field name="total_revenue" widget="statinfo" string="Общая прибыль"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-money" name="action_recompute">
+                            <field name="total_expenses" widget="statinfo" string="Расходы"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-calculator" name="action_recompute">
+                            <field name="total_net_profit" widget="statinfo" string="Чистая прибыль"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-list" name="action_recompute">
+                            <field name="total_bookings" widget="statinfo" string="Тренировок"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-users" name="action_recompute">
+                            <field name="total_employees" widget="statinfo" string="Сотрудников"/>
+                        </button>
+                        <button type="object" class="oe_stat_button" icon="fa-user" name="action_recompute">
+                            <field name="total_customers" widget="statinfo" string="Клиентов"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sports_center_id" options="{'no_create': True}" placeholder="Выберите центр или включите 'Все центры'"/>
+                            <field name="all_centers"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="chart_granularity" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="most_frequent_customer_id" readonly="1"/>
+                            <field name="most_visited_training_type_id" readonly="1"/>
+                            <field name="top_employee_id" readonly="1"/>
+                        </group>
+                    </group>
+                <notebook>
+                    <page string="По центрам">
+                        <field name="rank_center_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_full_rank_center_tree', 'graph_view_ref': 'tennis_club_management.view_full_rank_center_graph'}"/>
+                    </page>
+                    <page string="Расходы по центрам">
+                        <field name="expense_center_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_full_expense_center_tree'}"/>
+                    </page>
+                    <page string="По сотрудникам">
+                        <field name="rank_employee_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_full_rank_employee_tree', 'graph_view_ref': 'tennis_club_management.view_full_rank_employee_graph'}"/>
+                    </page>
+                    <page string="Клиенты и типы">
+                        <group string="Клиенты (по числу тренировок)">
+                            <field name="rank_customer_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_full_rank_customer_tree', 'graph_view_ref': 'tennis_club_management.view_full_rank_customer_graph'}"/>
+                        </group>
+                        <group string="Типы тренировок (по числу тренировок)">
+                            <field name="rank_type_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_full_rank_type_tree', 'graph_view_ref': 'tennis_club_management.view_full_rank_type_graph'}"/>
+                        </group>
+                    </page>
+                </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_full_analytics_line_tree" model="ir.ui.view">
+        <field name="name">full.analytics.line.tree</field>
+        <field name="model">full.analytics.line</field>
+        <field name="arch" type="xml">
+            <list string="Динамика прибыли">
+                <field name="period_start"/>
+                <field name="amount"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_full_analytics_line_graph_day" model="ir.ui.view">
+        <field name="name">full.analytics.line.graph.day</field>
+        <field name="model">full.analytics.line</field>
+        <field name="arch" type="xml">
+            <graph string="Динамика прибыли по дням" type="line">
+                <field name="period_start" type="row" interval="day"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_full_analytics_line_graph_week" model="ir.ui.view">
+        <field name="name">full.analytics.line.graph.week</field>
+        <field name="model">full.analytics.line</field>
+        <field name="arch" type="xml">
+            <graph string="Динамика прибыли по неделям" type="line">
+                <field name="period_start" type="row" interval="week"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_full_analytics_line_graph_month" model="ir.ui.view">
+        <field name="name">full.analytics.line.graph.month</field>
+        <field name="model">full.analytics.line</field>
+        <field name="arch" type="xml">
+            <graph string="Динамика прибыли по месяцам" type="line">
+                <field name="period_start" type="row" interval="month"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_full_analytics_line_graph_quarter" model="ir.ui.view">
+        <field name="name">full.analytics.line.graph.quarter</field>
+        <field name="model">full.analytics.line</field>
+        <field name="arch" type="xml">
+            <graph string="Динамика прибыли по кварталам" type="line">
+                <field name="period_start" type="row" interval="quarter"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг центров -->
+    <record id="view_full_rank_center_tree" model="ir.ui.view">
+        <field name="name">full.analytics.rank.center.tree</field>
+        <field name="model">full.analytics.rank.center</field>
+        <field name="arch" type="xml">
+            <list string="Прибыль по центрам">
+                <field name="sports_center_id"/>
+                <field name="revenue"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_full_rank_center_graph" model="ir.ui.view">
+        <field name="name">full.analytics.rank.center.graph</field>
+        <field name="model">full.analytics.rank.center</field>
+        <field name="arch" type="xml">
+            <graph string="Прибыль по центрам" type="bar">
+                <field name="sports_center_id" type="row"/>
+                <field name="revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг сотрудников -->
+    <record id="view_full_rank_employee_tree" model="ir.ui.view">
+        <field name="name">full.analytics.rank.employee.tree</field>
+        <field name="model">full.analytics.rank.employee</field>
+        <field name="arch" type="xml">
+            <list string="Прибыль по сотрудникам">
+                <field name="employee_id"/>
+                <field name="revenue"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_full_rank_employee_graph" model="ir.ui.view">
+        <field name="name">full.analytics.rank.employee.graph</field>
+        <field name="model">full.analytics.rank.employee</field>
+        <field name="arch" type="xml">
+            <graph string="Прибыль по сотрудникам" type="bar">
+                <field name="employee_id" type="row"/>
+                <field name="revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг клиентов -->
+    <record id="view_full_rank_customer_tree" model="ir.ui.view">
+        <field name="name">full.analytics.rank.customer.tree</field>
+        <field name="model">full.analytics.rank.customer</field>
+        <field name="arch" type="xml">
+            <list string="Клиенты по числу тренировок">
+                <field name="customer_id"/>
+                <field name="bookings_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_full_rank_customer_graph" model="ir.ui.view">
+        <field name="name">full.analytics.rank.customer.graph</field>
+        <field name="model">full.analytics.rank.customer</field>
+        <field name="arch" type="xml">
+            <graph string="Клиенты по числу тренировок" type="bar">
+                <field name="customer_id" type="row"/>
+                <field name="bookings_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг типов -->
+    <record id="view_full_rank_type_tree" model="ir.ui.view">
+        <field name="name">full.analytics.rank.type.tree</field>
+        <field name="model">full.analytics.rank.type</field>
+        <field name="arch" type="xml">
+            <list string="Типы тренировок по посещаемости">
+                <field name="training_type_id"/>
+                <field name="bookings_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_full_rank_type_graph" model="ir.ui.view">
+        <field name="name">full.analytics.rank.type.graph</field>
+        <field name="model">full.analytics.rank.type</field>
+        <field name="arch" type="xml">
+            <graph string="Типы тренировок по посещаемости" type="bar">
+                <field name="training_type_id" type="row"/>
+                <field name="bookings_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_full_expense_center_tree" model="ir.ui.view">
+        <field name="name">full.analytics.expense.center.tree</field>
+        <field name="model">full.analytics.expense.center</field>
+        <field name="arch" type="xml">
+            <list string="Расходы по центрам">
+                <field name="sports_center_id"/>
+                <field name="salary_expense"/>
+                <field name="trainer_extra_expense"/>
+                <field name="total_expense"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_full_analytics_wizard" model="ir.actions.act_window">
+        <field name="name">Полная аналитика</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">full.analytics.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{}</field>
+    </record>
+    <record id="action_full_analytics_wizard_bound_to_centers" model="ir.actions.act_window">
+        <field name="name">Полная аналитика</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">full.analytics.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{}</field>
+        <field name="binding_model_id" ref="model_sports_center"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="groups_id" eval="[(4, ref('tennis_club_management.group_tennis_director'))]"/>
+    </record>
+    <menuitem id="menu_full_analytics"
+              name="Полная аналитика"
+              parent="tennis_club_management.menu_tennis_club_management_management"
+              action="action_full_analytics_wizard"
+              sequence="5"
+              groups="tennis_club_management.group_tennis_director"/>
+
+</odoo>
+
+

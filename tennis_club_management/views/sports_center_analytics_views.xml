@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sports_center_analytics_wizard_form" model="ir.ui.view">
+        <field name="name">sports.center.analytics.wizard.form</field>
+        <field name="model">sports.center.analytics.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Аналитика центра" create="false" edit="true">
+                <group>
+                    <group>
+                        <field name="sports_center_id" readonly="1"/>
+                        <field name="interval"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="total_bookings" readonly="1"/>
+                        <field name="total_revenue" readonly="1"/>
+                        <field name="most_popular_court_id" readonly="1"/>
+                        <field name="most_frequent_customer_id" readonly="1"/>
+                        <field name="most_profitable_employee_id" readonly="1"/>
+                        <field name="most_visited_training_type_id" readonly="1"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Доход по неделям">
+                        <field name="line_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_sports_center_analytics_line_tree'}"/>
+                    </page>
+                    <page string="Рейтинги">
+                        <group string="Сотрудники по выручке (Top)">
+                            <field name="rank_employee_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_sports_center_rank_employee_tree', 'graph_view_ref': 'tennis_club_management.view_sports_center_rank_employee_graph'}"/>
+                        </group>
+                        <group string="Корты по количеству тренировок (Top)">
+                            <field name="rank_court_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_sports_center_rank_court_tree', 'graph_view_ref': 'tennis_club_management.view_sports_center_rank_court_graph'}"/>
+                        </group>
+                        <group string="Клиенты по посещаемости (Top)">
+                            <field name="rank_customer_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_sports_center_rank_customer_tree', 'graph_view_ref': 'tennis_club_management.view_sports_center_rank_customer_graph'}"/>
+                        </group>
+                        <group string="Типы тренировок по посещаемости (Top)">
+                            <field name="rank_type_ids" readonly="1" context="{'tree_view_ref': 'tennis_club_management.view_sports_center_rank_type_tree', 'graph_view_ref': 'tennis_club_management.view_sports_center_rank_type_graph'}"/>
+                        </group>
+                    </page>
+                </notebook>
+                <footer>
+                    <button name="action_recompute" type="object" string="Пересчитать" class="btn-primary"/>
+                    <button string="Закрыть" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sports_center_analytics_line_tree" model="ir.ui.view">
+        <field name="name">sports.center.analytics.line.tree</field>
+        <field name="model">sports.center.analytics.line</field>
+        <field name="arch" type="xml">
+            <list string="Доход по неделям">
+                <field name="week_start"/>
+                <field name="amount"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sports_center_analytics_line_graph" model="ir.ui.view">
+        <field name="name">sports.center.analytics.line.graph</field>
+        <field name="model">sports.center.analytics.line</field>
+        <field name="arch" type="xml">
+            <graph string="Доход по неделям" type="line">
+                <field name="week_start" type="row" interval="week"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг сотрудников -->
+    <record id="view_sports_center_rank_employee_tree" model="ir.ui.view">
+        <field name="name">sports.center.rank.employee.tree</field>
+        <field name="model">sports.center.analytics.rank.employee</field>
+        <field name="arch" type="xml">
+            <list string="Рейтинг сотрудников">
+                <field name="employee_id"/>
+                <field name="bookings_count"/>
+                <field name="revenue"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sports_center_rank_employee_graph" model="ir.ui.view">
+        <field name="name">sports.center.rank.employee.graph</field>
+        <field name="model">sports.center.analytics.rank.employee</field>
+        <field name="arch" type="xml">
+            <graph string="Сотрудники по выручке" type="bar">
+                <field name="employee_id" type="row"/>
+                <field name="revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг кортов -->
+    <record id="view_sports_center_rank_court_tree" model="ir.ui.view">
+        <field name="name">sports.center.rank.court.tree</field>
+        <field name="model">sports.center.analytics.rank.court</field>
+        <field name="arch" type="xml">
+            <list string="Рейтинг кортов">
+                <field name="court_id"/>
+                <field name="bookings_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sports_center_rank_court_graph" model="ir.ui.view">
+        <field name="name">sports.center.rank.court.graph</field>
+        <field name="model">sports.center.analytics.rank.court</field>
+        <field name="arch" type="xml">
+            <graph string="Корты по посещаемости" type="bar">
+                <field name="court_id" type="row"/>
+                <field name="bookings_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг клиентов -->
+    <record id="view_sports_center_rank_customer_tree" model="ir.ui.view">
+        <field name="name">sports.center.rank.customer.tree</field>
+        <field name="model">sports.center.analytics.rank.customer</field>
+        <field name="arch" type="xml">
+            <list string="Рейтинг клиентов">
+                <field name="customer_id"/>
+                <field name="bookings_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sports_center_rank_customer_graph" model="ir.ui.view">
+        <field name="name">sports.center.rank.customer.graph</field>
+        <field name="model">sports.center.analytics.rank.customer</field>
+        <field name="arch" type="xml">
+            <graph string="Клиенты по посещаемости" type="bar">
+                <field name="customer_id" type="row"/>
+                <field name="bookings_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Рейтинг типов тренировок -->
+    <record id="view_sports_center_rank_type_tree" model="ir.ui.view">
+        <field name="name">sports.center.rank.type.tree</field>
+        <field name="model">sports.center.analytics.rank.type</field>
+        <field name="arch" type="xml">
+            <list string="Рейтинг типов тренировок">
+                <field name="training_type_id"/>
+                <field name="bookings_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sports_center_rank_type_graph" model="ir.ui.view">
+        <field name="name">sports.center.rank.type.graph</field>
+        <field name="model">sports.center.analytics.rank.type</field>
+        <field name="arch" type="xml">
+            <graph string="Типы тренировок по посещаемости" type="bar">
+                <field name="training_type_id" type="row"/>
+                <field name="bookings_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+</odoo>
+

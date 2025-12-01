@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+        id="report_trainer_revenue_pdf"
+        model="trainer.revenue.report.wizard"
+        string="Отчёт по доходу тренера"
+        report_type="qweb-pdf"
+        name="tennis_club_management.trainer_revenue_pdf_template"
+        file="tennis_club_management.trainer_revenue_pdf_template"
+    />
+
+    <template id="trainer_revenue_pdf_template">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="doc"/>
+            <div class="page">
+                <h2>Отчёт по доходу тренера</h2>
+                <p>
+                    Тренер: <t t-esc="o.employee_id.display_name"/>
+                    <br/>
+                    Период: <t t-esc="o.date_start"/> — <t t-esc="o.date_end"/>
+                </p>
+                <table class="table table-sm o_main_table">
+                    <tr>
+                        <th>Отработано часов</th>
+                        <th>Всего тренировок</th>
+                        <th>Доход (наценка)</th>
+                    </tr>
+                    <tr>
+                        <td><t t-esc="'%.2f' % o.total_hours"/></td>
+                        <td><t t-esc="o.total_trainings"/></td>
+                        <td><t t-esc="'%.2f' % o.total_extra_amount"/></td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+    </template>
+</odoo>
+
+
+
+

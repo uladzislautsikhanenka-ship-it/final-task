@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+        id="report_full_analytics_pdf"
+        model="full.analytics.wizard"
+        string="Полная аналитика"
+        report_type="qweb-pdf"
+        name="tennis_club_management.report_full_analytics_template"
+        file="tennis_club_management.report_full_analytics_template"
+        print_report_name="'Полная аналитика - %s' % (object.date_from or '')"
+    />
+
+    <template id="report_full_analytics_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Полная аналитика</h2>
+                        <p>
+                            Период:
+                            <span t-esc="o.date_from"/> — <span t-esc="o.date_to"/>
+                            <t t-if="o.sports_center_id">, Центр: <span t-esc="o.sports_center_id.name"/></t>
+                        </p>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Общая прибыль:</strong> <span t-esc="o.total_revenue"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Расходы:</strong> <span t-esc="o.total_expenses"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Чистая прибыль:</strong> <span t-esc="o.total_net_profit"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Всего тренировок:</strong> <span t-esc="o.total_bookings"/>
+                            </div>
+                        </div>
+                        <h3 style="margin-top:16px;">Рейтинг спортивных центров</h3>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Центр</th>
+                                    <th class="text-right">Прибыль</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.rank_center_ids" t-as="rc">
+                                    <td t-esc="rc.sports_center_id.name"/>
+                                    <td class="text-right" t-esc="rc.revenue"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Расходы по центрам</h3>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Центр</th>
+                                    <th class="text-right">Зарплаты</th>
+                                    <th class="text-right">Доплаты тренерам</th>
+                                    <th class="text-right">Итого расходы</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.expense_center_ids" t-as="ex">
+                                    <td t-esc="ex.sports_center_id.name"/>
+                                    <td class="text-right" t-esc="ex.salary_expense"/>
+                                    <td class="text-right" t-esc="ex.trainer_extra_expense"/>
+                                    <td class="text-right" t-esc="ex.total_expense"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Рейтинг сотрудников</h3>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Сотрудник</th>
+                                    <th class="text-right">Прибыль</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.rank_employee_ids" t-as="re">
+                                    <td t-esc="re.employee_id.name"/>
+                                    <td class="text-right" t-esc="re.revenue"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Клиенты (по числу тренировок)</h3>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Клиент</th>
+                                    <th class="text-right">Тренировок</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.rank_customer_ids" t-as="rcu">
+                                    <td t-esc="rcu.customer_id.name"/>
+                                    <td class="text-right" t-esc="rcu.bookings_count"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Типы тренировок (по посещаемости)</h3>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Тип тренировки</th>
+                                    <th class="text-right">Тренировок</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.rank_type_ids" t-as="rt">
+                                    <td t-esc="rt.training_type_id.name"/>
+                                    <td class="text-right" t-esc="rt.bookings_count"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
+

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="trainer_revenue_report_wizard_view_form" model="ir.ui.view">
+        <field name="name">trainer.revenue.report.wizard.form</field>
+        <field name="model">trainer.revenue.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Доход тренера для спортивного центра">
+                <group>
+                    <group>
+                        <field name="employee_id" readonly="1"/>
+                        <field name="date_start" invisible="is_simple"/>
+                        <field name="date_end" invisible="is_simple"/>
+                    </group>
+                    <group>
+                        <field name="total_trainings" readonly="1"/>
+                        <field name="total_hours" readonly="1"/>
+                    </group>
+                </group>
+                <group string="Заработано">
+                    <field name="hourly_salary_amount" readonly="1" widget="monetary" string="За почасовую ставку" 
+                           help="Заработано по почасовой ставке за период (часы из календаря доступности × ставка)"/>
+                    <field name="training_extra_amount" readonly="1" widget="monetary" string="За тренировки (наценки тренера)" 
+                           help="Заработано за наценки тренера на тренировки"/>
+                    <field name="total_earned" readonly="1" widget="monetary" string="Итого заработано" 
+                           help="Итоговая сумма: почасовая ставка + наценки за тренировки"/>
+                </group>
+                <group string="Доход спортивного центра" class="oe_read_only" invisible="is_simple">
+                    <group>
+                        <field name="total_amount" readonly="1" string="Общая сумма тренировок (цена занятий)"/>
+                        <field name="total_extra_amount" readonly="1" string="Наценка тренера"/>
+                        <field name="total_center_amount" readonly="1" string="Доход спортивного центра (цена - наценка)" widget="monetary"/>
+                    </group>
+                </group>
+                <group string="Количество тренировок по типам" invisible="is_simple">
+                    <group>
+                        <field name="count_individual" readonly="1"/>
+                        <field name="count_split" readonly="1"/>
+                        <field name="count_group" readonly="1"/>
+                        <field name="types_summary" readonly="1" invisible="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Подробнее" type="object" name="action_open_detailed" class="btn-secondary" invisible="not is_simple"/>
+                    <button string="Печать PDF" type="object" name="action_print_pdf" class="btn-primary" 
+                            invisible="is_simple"
+                            groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <button string="Закрыть" special="cancel" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_trainer_revenue_report_wizard" model="ir.actions.act_window">
+        <field name="name">Доход тренера</field>
+        <field name="res_model">trainer.revenue.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="trainer_revenue_report_wizard_view_form"/>
+        <field name="target">new</field>
+        <field name="context">{'default_employee_id': active_id, 'simple_view': True}</field>
+    </record>
+</odoo>
+
+
