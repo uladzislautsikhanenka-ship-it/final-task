@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="role_dashboard_page" name="Tennis Role Dashboard">
+        <t t-call="web.layout">
+            <t t-set="title">Мой кабинет</t>
+            <section class="o_tennis_role_dashboard container my-5">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-10 col-xl-8">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4">
+                                <h2 class="h4 mb-3" t-esc="user.name"/>
+                                <p class="text-muted mb-3">
+                                    Ваш статус:
+                                    <span class="fw-bold text-body" t-esc="role_label"/>
+                                </p>
+                                <p class="mb-4" t-esc="info_message"/>
+                                <div class="row g-3">
+                                    <t t-foreach="buttons" t-as="button">
+                                        <div class="col-12 col-sm-6">
+                                            <a class="btn btn-primary w-100" t-attf-href="/web#action=#{button['action_id']}">
+                                                <span class="fw-semibold" t-esc="button['label']"/>
+                                            </a>
+                                            <div class="text-muted small mt-1" t-esc="button['description']"/>
+                                        </div>
+                                    </t>
+                                    <t t-if="not buttons">
+                                        <div class="col">
+                                            <div class="alert alert-warning mb-0" role="alert">
+                                                <span>Нет доступных действий.</span>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+</odoo>
