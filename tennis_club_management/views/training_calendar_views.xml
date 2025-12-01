@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Календарь тренировок - основное представление -->
+    <record id="training_booking_view_calendar_main" model="ir.ui.view">
+        <field name="name">training.booking.calendar.main</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Календарь тренировок" 
+                      date_start="booking_date" 
+                      date_stop="booking_date" 
+                      color="color">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="all_participants_display"/>
+                <field name="trainer_id"/>
+                <field name="court_id"/>
+                <field name="training_type_id"/>
+                <field name="start_time_display"/>
+                <field name="end_time_display"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Календарь тренировок для менеджеров - с отображением по часам -->
+    <record id="training_booking_view_calendar_manager" model="ir.ui.view">
+        <field name="name">training.booking.calendar.manager</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Календарь тренировок" 
+                      date_start="booking_datetime_start" 
+                      date_stop="booking_datetime_end" 
+                      color="color"
+                      mode="month"
+                      event_open_popup="true"
+                      quick_create="0">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="all_participants_display"/>
+                <field name="trainer_id"/>
+                <field name="court_id"/>
+                <field name="training_type_id"/>
+                <field name="start_time_display"/>
+                <field name="end_time_display"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Модальное окно для записи на тренировку -->
+    <record id="training_booking_view_form_modal" model="ir.ui.view">
+        <field name="name">training.booking.form.modal</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <form string="Запись на тренировку">
+                <header>
+                    <button name="action_confirm" string="Сохранить и записать" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="Отменить" type="object" class="btn-secondary" invisible="state in ['completed', 'cancelled']"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="sports_center_id" required="1" no_create="True" string="Спортивный центр"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="training_type_id" required="1" no_create="True" string="Тип тренировки"/>
+                            <field name="is_group_training" invisible="1"/>
+                            <field name="group_id" no_create="True" 
+                                   domain="[('training_type_id', '=', training_type_id), ('active', '=', True)]"
+                                   required="is_group_training"
+                                   invisible="not is_group_training"
+                                   string="Группа"/>
+                            <field name="customer_id" no_create="True" 
+                                   domain="['&amp;', '|', ('sports_center_id', '=', sports_center_id), ('sports_center_id', '=', False), ('is_company', '=', False), ('is_employee', '=', False)]" 
+                                   context="{'filter_clients_only': True}"
+                                   required="not is_group_training"
+                                   invisible="is_group_training"
+                                   string="Клиент"/>
+                            <field name="booking_date" required="1" string="Дата тренировки"/>
+                            <field name="trainer_id" required="1" no_create="True" domain="['&amp;', ('position', '=', 'trainer'), '|', ('sports_center_id', '=', sports_center_id), ('sports_center_id', '!=', False), '|', ('availability_ids.availability_date', '=', booking_date), ('availability_ids', '!=', False)]" string="Тренер"/>
+                            <field name="court_id" required="1" no_create="True" domain="[('sports_center_id', '=', sports_center_id)]" string="Теннисный корт"/>
+                        </group>
+                        <group>
+                            <field name="start_time" required="1" string="Время начала"/>
+                            <field name="end_time" required="1" string="Время окончания"/>
+                            <field name="price_per_hour" readonly="1" string="Цена центра за час"/>
+                            <field name="trainer_extra_per_hour" readonly="1" string="Надбавка тренера"/>
+                            <field name="final_price_per_hour" readonly="1" string="Итог за час"/>
+                            <label for="available_times" string="Доступное время (с учётом доступности тренера)"/>
+                            <field name="available_times" readonly="1" widget="text"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="available_times" readonly="1" widget="text" string="Доступное время"/>
+                        </group>
+                        <group>
+                            <field name="total_price" readonly="1" string="Общая стоимость"/>
+                            <field name="is_group_training" invisible="1"/>
+                            <field name="customer_balance" readonly="1" string="Баланс клиента" invisible="is_group_training"/>
+                            <field name="can_afford" readonly="1" string="Достаточно средств"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="price_per_hour" readonly="1" string="Цена за час"/>
+                            <field name="duration_hours" readonly="1" string="Продолжительность"/>
+                        </group>
+                        <group>
+                            <!-- Пустая группа для выравнивания -->
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Участники" name="participants" invisible="training_type_min_participants == 1">
+                            <div class="alert alert-info" role="alert" invisible="not training_type_id or training_type_min_participants == 1">
+                                <p><strong>Требуется минимум участников:</strong> <field name="training_type_min_participants" readonly="1"/> (включая основного клиента)</p>
+                                <p><strong>Максимум участников:</strong> <field name="training_type_max_participants" readonly="1"/></p>
+                                <p><strong>Текущее количество:</strong> <field name="participant_count" readonly="1"/></p>
+                            </div>
+                            <group>
+                                <group>
+                                    <label for="customer_id" string="Основной клиент"/>
+                                    <field name="customer_id" readonly="1" nolabel="1"/>
+                                </group>
+                            </group>
+                            <label for="additional_participants" string="Дополнительные участники"/>
+                            <field name="additional_participants" create="1" invisible="not can_add_participants">
+                                <list string="Дополнительные участники" editable="bottom">
+                                    <field name="participant_id" no_create="True" 
+                                           context="{'default_booking_id': parent.id, 'default_sports_center_id': parent.sports_center_id, 'active_id': parent.id, 'active_model': 'training.booking', 'filter_clients_only': True}"/>
+                                    <field name="sequence"/>
+                                </list>
+                            </field>
+                            <field name="additional_participants" create="0" invisible="can_add_participants">
+                                <list string="Дополнительные участники" editable="bottom">
+                                    <field name="participant_id" no_create="True" 
+                                           context="{'default_booking_id': parent.id, 'default_sports_center_id': parent.sports_center_id, 'active_id': parent.id, 'active_model': 'training.booking', 'filter_clients_only': True}"/>
+                                    <field name="sequence"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <delete id="action_training_calendar" model="ir.actions.act_window"/>
+    <record id="action_training_calendar" model="ir.actions.server">
+        <field name="name">Календарь тренировок</field>
+        <field name="model_id" ref="base.model_ir_actions_server"/>
+        <field name="state">code</field>
+        <field name="code">action = env['training.booking'].action_open_calendar()</field>
+    </record>
+
+    <record id="action_training_booking_modal" model="ir.actions.act_window">
+        <field name="name">Запись на тренировку</field>
+        <field name="res_model">training.booking</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="training_booking_view_form_modal"/>
+        <field name="target">new</field>
+        <field name="context">{'default_state': 'draft', 'default_sports_center_id': 1}</field>
+    </record>
+
+</odoo>

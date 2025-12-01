@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Записи на тренировки - список -->
+    <record id="training_booking_view_tree" model="ir.ui.view">
+        <field name="name">training.booking.tree</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <list string="Записи на тренировки" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'" decoration-info="state in ['draft','confirmed','in_progress']">
+                <field name="name"/>
+                <field name="sports_center_id"/>
+                <field name="customer_id"/>
+                <field name="trainer_id"/>
+                <field name="court_id"/>
+                <field name="training_type_id"/>
+                <field name="booking_date"/>
+                <field name="start_time_display"/>
+                <field name="end_time_display"/>
+                <field name="final_price_per_hour"/>
+                <field name="participant_count"/>
+                <field name="total_price"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Записи на тренировки - форма -->
+    <record id="training_booking_view_form" model="ir.ui.view">
+        <field name="name">training.booking.form</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <form string="Запись на тренировку">
+                <header>
+                    <button name="action_confirm" string="Подтвердить" type="object" class="oe_highlight" 
+                            invisible="state != 'draft' or not can_confirm"
+                            groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <button name="action_start" string="Начать" type="object" class="oe_highlight" 
+                            invisible="state != 'confirmed'"
+                            groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <button name="action_complete" string="Завершить" type="object" class="oe_highlight" 
+                            invisible="state != 'in_progress'"
+                            groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <button name="action_cancel" string="Отменить" type="object" class="btn-secondary" 
+                            invisible="state in ['completed', 'cancelled']"/>
+                    <button name="action_reset_to_draft" string="В черновик" type="object" class="btn-secondary" 
+                            invisible="state != 'cancelled'"
+                            groups="tennis_club_management.group_tennis_director,tennis_club_management.group_tennis_manager"/>
+                    <field name="state" widget="statusbar"
+                           readonly="is_trainer_self_booking"/>
+                    <div class="alert alert-info" role="alert" invisible="state != 'confirmed' or not time_until_start" style="margin: 5px 0; padding: 8px;">
+                        <strong>До начала тренировки:</strong> <field name="time_until_start" readonly="1" nolabel="1"/>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="state != 'in_progress' or not time_until_end" style="margin: 5px 0; padding: 8px;">
+                        <strong>До окончания тренировки:</strong> <field name="time_until_end" readonly="1" nolabel="1"/>
+                    </div>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_participants" icon="fa-users" invisible="training_type_min_participants == 1">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="participant_count" string="Участники"/>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sports_center_id" required="1" no_create="True" string="Спортивный центр" readonly="state != 'draft'"/>
+                            <field name="training_type_id" no_create="True" readonly="state != 'draft'"/>
+                            <field name="is_group_training" invisible="1"/>
+                            <field name="group_id" no_create="True" 
+                                   domain="[('training_type_id', '=', training_type_id), ('active', '=', True)]"
+                                   required="is_group_training"
+                                   invisible="not is_group_training"
+                                   readonly="state != 'draft'"
+                                   string="Группа"/>
+                            <field name="customer_id" no_create="True" 
+                                   domain="['&amp;', '&amp;', '|', ('sports_center_id', '=', sports_center_id), ('sports_center_id', '=', False), ('is_company', '=', False), ('is_employee', '=', False), ('id', 'not in', excluded_participant_ids_for_domain)]"
+                                   context="{'filter_clients_only': True}"
+                                   required="not is_group_training"
+                                   invisible="is_group_training"
+                                   readonly="state != 'draft'"/>
+                            <field name="trainer_id" no_create="True" domain="['&amp;', ('position', '=', 'trainer'), '|', ('sports_center_id', '=', sports_center_id), ('sports_center_id', '!=', False), '|', ('availability_ids.availability_date', '=', booking_date), ('availability_ids', '!=', False)]"
+                                   readonly="state != 'draft'"/>
+                            <field name="available_booking_date_selection" 
+                                   invisible="not trainer_id or not sports_center_id"
+                                   required="trainer_id and sports_center_id"
+                                   widget="selection"
+                                   options="{'no_create': True, 'no_create_edit': True}"
+                                   string="Дата тренировки"
+                                   readonly="state != 'draft'"/>
+                            <field name="booking_date" 
+                                   invisible="trainer_id and sports_center_id"
+                                   required="not trainer_id or not sports_center_id"
+                                   string="Дата тренировки"
+                                   readonly="state != 'draft'"/>
+                            <field name="court_id" no_create="True" domain="[('sports_center_id', '=', sports_center_id)]" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="available_start_time_selection" 
+                                   invisible="not trainer_id or not sports_center_id or (not booking_date and not available_booking_date_selection) or not court_id"
+                                   required="trainer_id and sports_center_id and (booking_date or available_booking_date_selection) and court_id"
+                                   string="Время начала"
+                                   readonly="state != 'draft'"/>
+                            <field name="start_time" 
+                                   invisible="trainer_id and sports_center_id and (booking_date or available_booking_date_selection) and court_id"
+                                   required="not trainer_id or not sports_center_id or (not booking_date and not available_booking_date_selection) or not court_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="end_time" readonly="state != 'draft'"/>
+                            <field name="price_per_hour" readonly="1"/>
+                            <field name="trainer_extra_per_hour" readonly="1"/>
+                            <field name="final_price_per_hour" readonly="1"/>
+                            <field name="total_price" readonly="1"/>
+                            <field name="customer_balance" readonly="1" invisible="is_group_training"/>
+                            <field name="can_afford" readonly="1"/>
+                            <field name="has_min_participants" readonly="1" invisible="training_type_min_participants == 1"/>
+                            <field name="can_add_participants" readonly="1" invisible="1"/>
+                            <field name="can_confirm" readonly="1" invisible="1"/>
+                            <div class="alert alert-warning" role="alert" invisible="can_confirm or state != 'draft' or training_type_min_participants == 1" style="margin-top: 10px;">
+                                <p><strong>Внимание!</strong> Для подтверждения записи необходимо:</p>
+                                <ul>
+                                    <li invisible="can_afford">- Пополнить баланс клиента (недостаточно средств)</li>
+                                    <li invisible="has_min_participants">- Добавить дополнительных участников (минимум: <field name="training_type_min_participants" readonly="1"/>)</li>
+                                </ul>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Постоянные занятия" name="recurrence">
+                            <group>
+                                <field name="is_recurring" readonly="state != 'draft'"/>
+                            </group>
+                            <group invisible="not is_recurring">
+                                <group>
+                                    <field name="recur_months" readonly="state != 'draft'"/>
+                                    <field name="recur_times_per_week" readonly="state != 'draft'"/>
+                                </group>
+                                <group>
+                                    <field name="recur_weekday_ids" widget="many2many_tags" readonly="state != 'draft'"/>
+                                    <field name="recur_start_time" readonly="state != 'draft'"/>
+                                    <field name="recur_end_time" readonly="state != 'draft'"/>
+                                </group>
+                                <group>
+                                    <field name="recur_total_sessions" readonly="1"/>
+                                    <field name="overall_total_price" readonly="1"/>
+                                </group>
+                                <button name="action_generate_recurrences" type="object" string="Сгенерировать будущие занятия" class="oe_highlight" invisible="state != 'draft'"/>
+                            </group>
+                        </page>
+                        <page string="Участники" name="participants" invisible="training_type_min_participants == 1 or is_group_training">
+                            <div class="alert alert-info" role="alert" invisible="not training_type_id or training_type_min_participants == 1">
+                                <p><strong>Требуется минимум участников:</strong> <field name="training_type_min_participants" readonly="1"/> (включая основного клиента)</p>
+                                <p><strong>Максимум участников:</strong> <field name="training_type_max_participants" readonly="1"/></p>
+                                <p><strong>Текущее количество:</strong> <field name="participant_count" readonly="1"/></p>
+                                <p invisible="has_min_participants" style="color: red; font-weight: bold;">
+                                    ⚠️ Необходимо добавить еще участников для подтверждения записи!
+                                </p>
+                                <p invisible="not has_min_participants" style="color: green; font-weight: bold;">
+                                    ✓ Минимальное количество участников достигнуто
+                                </p>
+                            </div>
+                            <group>
+                                <group>
+                                    <label for="customer_id" string="Основной клиент"/>
+                                    <field name="customer_id" readonly="1" nolabel="1"/>
+                                </group>
+                            </group>
+                            <label for="additional_participants" string="Дополнительные участники"/>
+                            <field name="additional_participants" 
+                                   create="1" 
+                                   invisible="not can_add_participants or state != 'draft'"
+                                   readonly="not can_add_participants or state != 'draft'">
+                                <list string="Дополнительные участники" editable="bottom">
+                                    <field name="participant_id" no_create="True" 
+                                           domain="['&amp;', '&amp;', ('is_company', '=', False), ('is_employee', '=', False), ('telegram_chat_id', '!=', False), ('id', '!=', parent.customer_id), ('id', 'not in', parent.excluded_participant_ids_for_domain)]"
+                                           context="{'default_booking_id': parent.id, 'default_sports_center_id': parent.sports_center_id, 'active_id': parent.id, 'active_model': 'training.booking', 'filter_clients_only': True}"/>
+                                    <field name="sequence"/>
+                                </list>
+                            </field>
+                            <field name="additional_participants" 
+                                   create="0" 
+                                   invisible="can_add_participants or state == 'draft'"
+                                   readonly="state != 'draft'">
+                                <list string="Дополнительные участники" editable="bottom">
+                                    <field name="participant_id" no_create="True" 
+                                           domain="['&amp;', '&amp;', ('is_company', '=', False), ('is_employee', '=', False), ('telegram_chat_id', '!=', False), ('id', '!=', parent.customer_id), ('id', 'not in', parent.excluded_participant_ids_for_domain)]"
+                                           context="{'default_booking_id': parent.id, 'default_sports_center_id': parent.sports_center_id, 'active_id': parent.id, 'active_model': 'training.booking', 'filter_clients_only': True}"/>
+                                    <field name="sequence"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Информация" name="info">
+                            <group>
+                                <group>
+                                    <field name="sports_center_id" readonly="1"/>
+                                    <field name="price_per_hour" readonly="1"/>
+                                    <field name="duration_hours" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="start_time_display" readonly="1"/>
+                                    <field name="end_time_display" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Записи на тренировки - календарь -->
+    <record id="training_booking_view_calendar" model="ir.ui.view">
+        <field name="name">training.booking.calendar</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Календарь тренировок" date_start="booking_date" date_stop="booking_date" color="training_type_id">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="trainer_id"/>
+                <field name="court_id"/>
+                <field name="training_type_id"/>
+                <field name="start_time_display"/>
+                <field name="end_time_display"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Записи на тренировки - поиск -->
+    <record id="training_booking_view_search" model="ir.ui.view">
+        <field name="name">training.booking.search</field>
+        <field name="model">training.booking</field>
+        <field name="arch" type="xml">
+            <search string="Записи на тренировки">
+                <field name="name"/>
+                <field name="sports_center_id"/>
+                <field name="customer_id"/>
+                <field name="trainer_id"/>
+                <field name="court_id"/>
+                <field name="training_type_id"/>
+                <field name="booking_date"/>
+                <separator/>
+                <filter string="Индивидуальные" name="type_individual" domain="[('training_type_id.code', '=', 'INDIVIDUAL')]"/>
+                <filter string="Сплит" name="type_split" domain="[('training_type_id.code', '=', 'SPLIT')]"/>
+                <filter string="Групповые" name="type_group" domain="[('training_type_id.code', '=', 'GROUP')]"/>
+                <separator/>
+                <filter string="Черновики" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Подтвержденные" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="В процессе" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Завершенные" name="completed" domain="[('state', '=', 'completed')]"/>
+                <filter string="Отмененные" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Сегодня" name="today" domain="[('booking_date', '=', context_today())]"/>
+                <separator/>
+                <group string="Группировка">
+                    <filter string="По спортивному центру" name="group_sports_center" context="{'group_by': 'sports_center_id'}"/>
+                    <filter string="По клиенту" name="group_customer" context="{'group_by': 'customer_id'}"/>
+                    <filter string="По тренеру" name="group_trainer" context="{'group_by': 'trainer_id'}"/>
+                    <filter string="По корту" name="group_court" context="{'group_by': 'court_id'}"/>
+                    <filter string="По типу тренировки" name="group_training_type" context="{'group_by': 'training_type_id'}"/>
+                    <filter string="По дате" name="group_date" context="{'group_by': 'booking_date'}"/>
+                    <filter string="По статусу" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Действие для записей на тренировки -->
+    <record id="action_training_booking" model="ir.actions.act_window">
+        <field name="name">Записи на тренировки</field>
+        <field name="res_model">training.booking</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="training_booking_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Создайте первую запись на тренировку
+            </p>
+            <p>
+                Записи на тренировки позволяют управлять расписанием занятий и списывать средства с баланса клиентов.
+            </p>
+        </field>
+    </record>
+
+
+    <!-- Быстрое создание записи -->
+    <record id="action_training_booking_quick_create" model="ir.actions.act_window">
+        <field name="name">Быстрая запись на тренировку</field>
+        <field name="res_model">training.booking</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_state': 'draft'}</field>
+    </record>
+
+    <!-- Действия для просмотра тренировок тренера -->
+    <record id="action_trainer_future_bookings" model="ir.actions.act_window">
+        <field name="name">Будущие тренировки</field>
+        <field name="res_model">training.booking</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="domain">[('trainer_id', '=', active_id), ('state', 'in', ['confirmed', 'in_progress'])]</field>
+        <field name="context">{'search_default_trainer_id': active_id}</field>
+    </record>
+
+    <record id="action_trainer_past_bookings" model="ir.actions.act_window">
+        <field name="name">Прошедшие тренировки</field>
+        <field name="res_model">training.booking</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="domain">[('trainer_id', '=', active_id), ('state', 'in', ['cancelled', 'completed'])]</field>
+        <field name="context">{'search_default_trainer_id': active_id}</field>
+    </record>
+
+    <!-- Действие "На рассмотрение" для менеджера -->
+    <record id="action_training_booking_pending_approval" model="ir.actions.act_window">
+        <field name="name">На рассмотрение</field>
+        <field name="res_model">training.booking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'draft'), ('is_trainer_self_booking', '=', True)]</field>
+        <field name="context">{'default_state': 'draft', 'search_default_draft': 1}</field>
+        <field name="view_id" ref="training_booking_view_tree"/>
+        <field name="search_view_id" ref="training_booking_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Нет записей на рассмотрении
+            </p>
+            <p>
+                Здесь отображаются тренировки, которые тренеры записали сами себе и требуют подтверждения менеджером.
+            </p>
+        </field>
+    </record>
+
+
+</odoo>
